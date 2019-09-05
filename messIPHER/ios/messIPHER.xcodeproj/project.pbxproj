@@ -19,6 +19,7 @@
 		2DCD954D1E0B4F2C00145EB5 /* messIPHERTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* messIPHERTests.m */; };
 		86589A1FC1311126780B1C05 /* libPods-messIPHERTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D99EE63CA3FAB322744E93F7 /* libPods-messIPHERTests.a */; };
 		AA3373778656409E1E46D136 /* libPods-messIPHER.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 46A4A63EBAB478D538BB8B82 /* libPods-messIPHER.a */; };
+		B57AB49F2321CB1C003618AB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B57AB49E2321CB1C003618AB /* GoogleService-Info.plist */; };
 		C2DFA3544D86BAED55BB991A /* libPods-messIPHER-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F79FD105D8B855E3D53C088 /* libPods-messIPHER-tvOS.a */; };
 /* End PBXBuildFile section */
 
@@ -62,6 +63,7 @@
 		88C1A34B03DE82F4B49BB996 /* Pods-messIPHER.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-messIPHER.debug.xcconfig"; path = "Target Support Files/Pods-messIPHER/Pods-messIPHER.debug.xcconfig"; sourceTree = "<group>"; };
 		A53253F4E92F1DE887919BEA /* Pods-messIPHER.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-messIPHER.release.xcconfig"; path = "Target Support Files/Pods-messIPHER/Pods-messIPHER.release.xcconfig"; sourceTree = "<group>"; };
 		AB09244356D7253F17DDE114 /* Pods-messIPHERTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-messIPHERTests.debug.xcconfig"; path = "Target Support Files/Pods-messIPHERTests/Pods-messIPHERTests.debug.xcconfig"; sourceTree = "<group>"; };
+		B57AB49E2321CB1C003618AB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C25D200BCD5BDD82F6598BC8 /* Pods-messIPHERTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-messIPHERTests.release.xcconfig"; path = "Target Support Files/Pods-messIPHERTests/Pods-messIPHERTests.release.xcconfig"; sourceTree = "<group>"; };
 		D99EE63CA3FAB322744E93F7 /* libPods-messIPHERTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-messIPHERTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4F40093907534070928BF88 /* libPods-messIPHER-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-messIPHER-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -132,6 +134,7 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				B57AB49E2321CB1C003618AB /* GoogleService-Info.plist */,
 			);
 			name = messIPHER;
 			sourceTree = "<group>";
@@ -194,7 +197,6 @@
 				AB09244356D7253F17DDE114 /* Pods-messIPHERTests.debug.xcconfig */,
 				C25D200BCD5BDD82F6598BC8 /* Pods-messIPHERTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -292,6 +294,9 @@
 						CreatedOnToolsVersion = 6.2;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
+					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = 5R74ZRNSLX;
+					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
 						ProvisioningStyle = Automatic;
@@ -308,6 +313,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -338,6 +344,7 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				B57AB49F2321CB1C003618AB /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -626,8 +633,10 @@
 			baseConfigurationReference = 88C1A34B03DE82F4B49BB996 /* Pods-messIPHER.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COPY_HEADERS_RUN_UNIFDEF = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = 5R74ZRNSLX;
 				INFOPLIST_FILE = messIPHER/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -646,7 +655,9 @@
 			baseConfigurationReference = A53253F4E92F1DE887919BEA /* Pods-messIPHER.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COPY_HEADERS_RUN_UNIFDEF = NO;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5R74ZRNSLX;
 				INFOPLIST_FILE = messIPHER/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
