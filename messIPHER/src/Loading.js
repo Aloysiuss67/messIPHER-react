@@ -2,14 +2,6 @@ import React from 'react'
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native'
 import firebase from 'react-native-firebase'
 
-// export default class Loading extends React.Component {
-//     componentDidMount() {
-//         firebase.auth().onAuthStateChanged(user => {
-//             this.props.navigation.navigate(user ? 'Home' : 'Register')
-//         })
-//     }
-// }
-
 export default class Loading extends React.Component {
     render() {
         return (
@@ -21,9 +13,8 @@ export default class Loading extends React.Component {
     }
 
     componentDidMount() {
-        //this.props.navigation.navigate(false ? 'Home' : 'Register')
         firebase.auth().onAuthStateChanged(user => {
-            this.props.navigation.navigate(user ? 'Home' : 'Register');
+            this.props.navigation.navigate(user ? 'Home' : 'Login');
         });
     }
 }
