@@ -46,6 +46,7 @@ export default class Login extends React.Component {
         )
     }
 }
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
