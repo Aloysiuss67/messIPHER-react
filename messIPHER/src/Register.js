@@ -3,7 +3,7 @@ import { StyleSheet, Text, TextInput, View, Button } from 'react-native'
 import firebase from 'react-native-firebase'
 
 export default class SignUp extends React.Component {
-    state = { email: '', password: '', confirmPassword: '', pin: '', errorMessage: null }
+    state = { name: '', email: '', password: '', confirmPassword: '', pin: '', errorMessage: null }
 
     handleSignUp = () => {
         firebase
@@ -21,6 +21,13 @@ export default class SignUp extends React.Component {
                 <Text style={{ color: 'red' }}>
                     {this.state.errorMessage}
                 </Text>}
+                <TextInput
+                    placeholder="Name"
+                    autoCapitalize="none"
+                    style={styles.textInput}
+                    onChangeText={name => this.setState({ name })}
+                    value={this.state.name}
+                />
                 <TextInput
                     placeholder="Email"
                     autoCapitalize="none"
@@ -46,7 +53,7 @@ export default class SignUp extends React.Component {
                 />
                 <TextInput
                     secureTextEntry
-                    placeholder="Create Pin"
+                    placeholder="Create Your Pin"
                     autoCapitalize="none"
                     style={styles.textInput}
                     onChangeText={pin => this.setState({ pin })}
