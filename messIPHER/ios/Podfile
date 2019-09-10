@@ -29,6 +29,7 @@ target 'messIPHER' do
 
   pod 'Firebase/Analytics'
   pod 'Firebase/Auth'
+  pod 'Firebase/Firestore'
 
   pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
 

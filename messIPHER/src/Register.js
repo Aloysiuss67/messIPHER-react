@@ -1,6 +1,8 @@
 import React from 'react'
 import { StyleSheet, Text, TextInput, View, Button } from 'react-native'
 import firebase from 'react-native-firebase'
+import {createNewChatUser} from './services/chatService'
+import {addNewUserToDB} from './services/firestoreService'
 
 export default class SignUp extends React.Component {
     state = { name: '', email: '', password: '', confirmPassword: '', pin: '', errorMessage: null }
@@ -11,6 +13,11 @@ export default class SignUp extends React.Component {
             .createUserWithEmailAndPassword(this.state.email, this.state.password)
             .then(() => this.props.navigation.navigate('Main'))
             .catch(error => this.setState({ errorMessage: error.message }))
+
+        //createNewChatUser(this.state)
+        addNewUserToDB(this.state)
+
+
     }
 
     render() {
@@ -21,6 +28,9 @@ export default class SignUp extends React.Component {
                 <Text style={{ color: 'red' }}>
                     {this.state.errorMessage}
                 </Text>}
+                {firebase.analytics.nativeModuleExists && <Text style={styles.module}>analytics()</Text>}
+                {firebase.auth.nativeModuleExists && <Text style={styles.module}>auth()</Text>}
+                {firebase.firestore.nativeModuleExists && <Text style={styles.module}>firestore()</Text>}
                 <TextInput
                     placeholder="Name"
                     autoCapitalize="none"
