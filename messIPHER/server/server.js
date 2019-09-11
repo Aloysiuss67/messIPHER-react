@@ -16,20 +16,28 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.get('/', (req, res) => {
+    res.send('all green!');
+});
+
+
 /**
  * Attempts to create a new user on the chatkit service. Within the req should be a
  * username, and a userid.
  * Fails if a user with that id already exists.
  */
 app.post('/users', (req, res) => {
+    console.log(chatkit)
     const username = req.body.user.name;
     const email = req.body.user.id;
+    console.log('attempting to add new user' + email);
     chatkit
         .createUser({
             id: email,
             name: username,
         })
         .then(() => {
+            console.log('successfully added user ' + email);
             res.sendStatus(201);
         })
         .catch(err => {
@@ -37,6 +45,8 @@ app.post('/users', (req, res) => {
                 console.log(`User already exists: ${username}`);
                 res.sendStatus(200);
             } else {
+                console.log('unsuccessfully added user ' + email);
+                console.log(err)
                 res.status(err.status).json(err);
             }
         });
@@ -47,6 +57,7 @@ app.post('/users', (req, res) => {
  * creator id, and a roomname.
  */
 app.post('/newRoom', (req, res) => {
+    console.log("try to create new room");
     const roomCreator = req.body.data.creator;
     const roomName = req.body.data.name;
     console.log('trying to create new room ' + roomCreator + roomName);
@@ -72,6 +83,7 @@ app.post('/newRoom', (req, res) => {
  * roomid, and a userid.
  */
 app.post('/addUserToRoom', (req, res) => {
+    console.log("trying to add new user to room");
     const roomid = req.body.data.id;
     const user = req.body.data.userIds;
     console.log('trying to add users to room: ' + user + ' ' + roomid);
@@ -93,6 +105,7 @@ app.post('/addUserToRoom', (req, res) => {
  * Returns an array of all the rooms the user is a part of.
  */
 app.post('/getUserRooms', (req, res) => {
+    console.log("trying to get all users rooms");
     const userid = req.body.data.userId
     console.log('attempting to get rooms' + userid)
     chatkit

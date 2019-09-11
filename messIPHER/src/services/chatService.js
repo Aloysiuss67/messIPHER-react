@@ -5,7 +5,11 @@ import axios from 'axios';
  * Attempts to reach the server and add a new user to the chat service. This will also assign them to the default room
  * @param user
  */
-export function createNewChatUser(user) {
+export function createNewChatUser(value) {
+    let user = {
+        name: value.name,
+        id: value.email,
+    };
     axios.post('http://localhost:5200/users', {user})
         .then(() => {
         })
