@@ -27,7 +27,6 @@ app.get('/', (req, res) => {
  * Fails if a user with that id already exists.
  */
 app.post('/users', (req, res) => {
-    console.log(chatkit)
     const username = req.body.user.name;
     const email = req.body.user.id;
     console.log('attempting to add new user' + email);

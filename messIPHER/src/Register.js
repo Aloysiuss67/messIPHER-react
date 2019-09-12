@@ -1,25 +1,26 @@
 import React from 'react'
 import { StyleSheet, Text, TextInput, View, Button } from 'react-native'
 import firebase from 'react-native-firebase'
-import {createNewChatUser} from './services/chatService'
+import {createNewChatUser} from './services/chatServerService'
 import {addNewUserToDB} from './services/firestoreService'
 
 export default class SignUp extends React.Component {
     state = { name: '', email: '', password: '', confirmPassword: '', pin: '', errorMessage: null }
 
     handleSignUp = () => {
-        // firebase
-        //     .auth()
-        //     .createUserWithEmailAndPassword(this.state.email, this.state.password)
-        //     .then(() => this.props.navigation.navigate('Main'))
-        //     .catch(error => this.setState({ errorMessage: error.message }))
+        firebase
+            .auth()
+            .createUserWithEmailAndPassword(this.state.email, this.state.password)
+            .then(() => this.props.navigation.navigate('Main'))
+            .catch(error => this.setState({ errorMessage: error.message }))
         let user = {
             email: this.state.email,
             name: this.state.name
         }
-
+        // calls chatkit service agents to create new user
         createNewChatUser(user)
-        //addNewUserToDB(this.state)
+        // calls firestore service to add user data to db
+        addNewUserToDB(this.state)
 
 
     }
@@ -32,9 +33,6 @@ export default class SignUp extends React.Component {
                 <Text style={{ color: 'red' }}>
                     {this.state.errorMessage}
                 </Text>}
-                {firebase.analytics.nativeModuleExists && <Text style={styles.module}>analytics()</Text>}
-                {firebase.auth.nativeModuleExists && <Text style={styles.module}>auth()</Text>}
-                {firebase.firestore.nativeModuleExists && <Text style={styles.module}>firestore()</Text>}
                 <TextInput
                     placeholder="Name"
                     autoCapitalize="none"
