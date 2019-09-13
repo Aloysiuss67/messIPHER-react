@@ -21,10 +21,10 @@ export function getPin() {
  * Collects the current user's list of friends.
  * @return {Array} the updated list of the user's friends
  */
-export function updateFriends() {
+export async function updateFriends(useremail) {
     let friends = [];
     // user is already logged in collect their friends
-    firebase.firestore().collection(`users/${userDetails().email}/myFriends`).get()
+    await firebase.firestore().collection(`users/${useremail}/myFriends`).get()
         .then((snapshot) => {
                 snapshot.forEach((doc) => {
                     // find all of the user's friends
@@ -49,7 +49,6 @@ export function updateFriends() {
 
 export async function searchForNewFriends(searchFor){
     let users = []
-    console.log(searchFor + " pre firebase")
     await firebase.firestore().collection(`users`).get()
         .then((snapshot) => {
             snapshot.forEach((doc) => {
@@ -68,7 +67,6 @@ export async function searchForNewFriends(searchFor){
         .catch((err) => {
             console.error(err)
         });
-    console.log(users.length + "post firebase")
     return users
 }
 
@@ -89,7 +87,10 @@ export function resetPin(newPin) {
         );
 }
 
-
+/**
+ * Adds the user to firestore. Stores the users name and pin details.
+ * @param user
+ */
 export function addNewUserToDB(user) {
     firebase.firestore().doc(`users/${user.email}`).set({username: user.name, pin: user.pin})
         .then()

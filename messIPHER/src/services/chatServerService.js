@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-
 /**
  * Attempts to reach the server and add a new user to the chat service. This will also assign them to the default room
  * @param user

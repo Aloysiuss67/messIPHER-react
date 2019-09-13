@@ -6,8 +6,8 @@ import {updateFriends} from './services/firestoreService'
 import {chatClientService} from './services/chatClientService';
 
 export default class Main extends React.Component {
-    state = {currentUser: null, search: ''};
-    friends = [];
+    state = {currentUser: null, search: '', friends: []};
+    // friends = [];
     chatkit = new chatClientService();
 
     avatar_url1 = 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'
@@ -44,16 +44,19 @@ export default class Main extends React.Component {
 
 
     componentDidMount() {
-        const {currentUser} = firebase.auth();
-        this.setState({currentUser});
-        this.chatkit.connectToChat('ben@test.com')
-        this.props.navigation.addListener("didFocus", () => {
-            this.friends = updateFriends()
+        this.props.navigation.addListener("didFocus", async () => {
+            const user = firebase.auth().currentUser;
+            //this.setState(currentUser = user);
+            this.setState(() => {
+                return { currentUser: user }
+            })
+            this.chatkit.connectToChat(user.email) // FIXME
+            this.setState({friends: await updateFriends(user.email)})
         })
     }
 
     updateSearch = search => {
-        this.setState({search});
+        this.setState({search: search});
     };
 
     render() {
@@ -67,10 +70,10 @@ export default class Main extends React.Component {
                     platform={'ios'}
                 />
                 {
-                    this.friends.map((l, i) => (
+                    this.state.friends.map((l, i) => (
                         <ListItem
                             key={i}
-                            //leftAvatar={{source: {uri: l.avatar_url}}}
+                            leftAvatar={{source: {uri: this.avatar_url2}}}
                             title={l.username}
                             subtitle={l.email}
                             onPress={()=> this.props.navigation.navigate('ViewMessage')}
@@ -79,12 +82,11 @@ export default class Main extends React.Component {
                     ))
                 }
                 <Button
-                    title="Go to Details"
-                    onPress={() => this.props.navigation.navigate('FindFriends')}
-                />
-                <Button
                     title="Logout"
-                    onPress={() => firebase.auth().signOut()}
+                    onPress={() => {
+                        this.setState({currentUser: null, friends: []})
+                        firebase.auth().signOut()
+                    }}
                 />
             </View>
         );

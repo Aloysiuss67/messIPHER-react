@@ -4,8 +4,8 @@ import {getUserRooms} from './chatServerService';
 
 
 export class chatClientService {
-        // chat current user, very important for chatkit
-        //private currentUser;
+    // chat current user, very important for chatkit
+    currentUser;
 
     // unsure ill use these
     messagesSubject = new BehaviorSubject([]);
@@ -55,6 +55,7 @@ export class chatClientService {
                 },
             });
         }
+        console.log(this.inbox)
     }
 
 
