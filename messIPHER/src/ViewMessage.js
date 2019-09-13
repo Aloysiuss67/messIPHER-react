@@ -45,25 +45,15 @@ export default class ViewMessage extends React.Component {
 
         return (
             <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-                {/*<Header text={this.props.chatWithUser}>*/}
-                {/*    {this.props.inChatRoom && (*/}
-                {/*        <TouchableOpacity onPress={this.props.backToUsers}>*/}
-                {/*            <View style={styles.leave_button}>*/}
-                {/*                <Text style={styles.leave_button_text}>Leave</Text>*/}
-                {/*            </View>*/}
-                {/*        </TouchableOpacity>*/}
-                {/*    )}*/}
-                {/*</Header>*/}
-
                 <View style={styles.body}>
                     <ScrollView
                         style={styles.messages}
                         contentContainerStyle={styles.scroll_container}
-                        ref={this.props.setScrollViewRef}
+                        //ref={this.props.setScrollViewRef}
                         refreshControl={
                             <RefreshControl
                                 refreshing={this.props.refreshing}
-                                onRefresh={this.props.loadPreviousMessages}
+                                // onRefresh={this.props.loadPreviousMessages}
                             />
                         }>
                         <FlatList data={this.inbox} renderItem={this.renderItem} />
@@ -80,7 +70,7 @@ export default class ViewMessage extends React.Component {
 
                         <View style={styles.button_container}>
                             {
-                                <TouchableOpacity onPress={console.log("i was sent")}>
+                                <TouchableOpacity onPress={() => console.log("i was sent")}>
                                     <View style={styles.send_button}>
                                         <Text style={styles.send_button_text}>Send</Text>
                                     </View>
@@ -101,7 +91,7 @@ export default class ViewMessage extends React.Component {
 
         return (
             <View key={item.key} style={styles.msg}>
-                <View style={styles.msg_wrapper}>
+                {/*<View style={styles.msg_wrapper}>*/}
                     <View style={styles.username}>
                         <Text style={[styles.username_text, styles[username_style]]}>
                             {item.username}
@@ -110,7 +100,7 @@ export default class ViewMessage extends React.Component {
                     <View style={[styles.msg_body, styles[box_style]]}>
                         <Text style={styles[`${box_style}_text`]}>{item.msg}</Text>
                     </View>
-                </View>
+                {/*</View>*/}
             </View>
         );
     };

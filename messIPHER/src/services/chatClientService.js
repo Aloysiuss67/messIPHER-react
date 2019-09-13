@@ -1,19 +1,16 @@
 import {Observable, BehaviorSubject} from 'rxjs';
 import {ChatManager, TokenProvider} from '@pusher/chatkit-client';
+import {getUserRooms} from './chatServerService';
 
 
 export class chatClientService {
-    roomID = '26350827';
-    rooms = ['26350827', '26319556', '26319533'];
-
-
         // chat current user, very important for chatkit
         //private currentUser;
 
-        // unsure ill use these
+    // unsure ill use these
     messagesSubject = new BehaviorSubject([]);
     //
-    // // main list of messages
+    // main list of messages
     //inbox: Array<{ roomid; message; userID; }> = [];
     inbox = []
 
@@ -27,11 +24,11 @@ export class chatClientService {
     async connectToChat(userEmail) {
         this.inbox = [];
         const tokenProvider = new TokenProvider({
-            url: 'https://us1.pusherplatform.io/services/chatkit_token_provider/v1/a282f0ee-db04-4558-81f2-205a40772748/token',
+            url: 'https://us1.pusherplatform.io/services/chatkit_token_provider/v1/f1b5ce13-d92e-4019-82a8-6255507b7144/token',
         });
 
         this.chatManager = new ChatManager({
-            instanceLocator: 'v1:us1:a282f0ee-db04-4558-81f2-205a40772748',
+            instanceLocator: 'v1:us1:f1b5ce13-d92e-4019-82a8-6255507b7144',
             userId: userEmail,
             tokenProvider,
         });
@@ -39,7 +36,7 @@ export class chatClientService {
         // wait for the connection before moving on
         this.currentUser = await this.chatManager.connect();
 
-        const chatrooms = await this.ChatServer.getUserRooms(userEmail);
+        const chatrooms = await getUserRooms(userEmail);
 
         for (let room of chatrooms) {
             await this.currentUser.subscribeToRoomMultipart({
