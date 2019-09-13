@@ -2,10 +2,16 @@ import React from 'react';
 import {StyleSheet, Platform, Image, Text, View, Button} from 'react-native';
 import {SearchBar, ListItem, Icon} from 'react-native-elements';
 import firebase from 'react-native-firebase';
+import {updateFriends} from './services/firestoreService'
+import {chatClientService} from './services/chatClientService';
 
 export default class Main extends React.Component {
     state = {currentUser: null, search: ''};
     friends = [];
+    chatkit = new chatClientService();
+
+    avatar_url1 = 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'
+    avatar_url2 = 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg'
 
     list = [
         {
@@ -35,9 +41,15 @@ export default class Main extends React.Component {
         };
     }
 
+
+
     componentDidMount() {
         const {currentUser} = firebase.auth();
         this.setState({currentUser});
+        this.chatkit.connectToChat('ben@test.com')
+        this.props.navigation.addListener("didFocus", () => {
+            this.friends = updateFriends()
+        })
     }
 
     updateSearch = search => {
@@ -48,9 +60,6 @@ export default class Main extends React.Component {
         const {currentUser, search} = this.state;
         return (
             <View>
-                {/*<Text>*/}
-                {/*    Hi {currentUser && currentUser.email}!*/}
-                {/*</Text>*/}
                 <SearchBar
                     placeholder="Find your friends..."
                     onChangeText={this.updateSearch}
@@ -58,12 +67,12 @@ export default class Main extends React.Component {
                     platform={'ios'}
                 />
                 {
-                    this.list.map((l, i) => (
+                    this.friends.map((l, i) => (
                         <ListItem
                             key={i}
-                            leftAvatar={{source: {uri: l.avatar_url}}}
-                            title={l.name}
-                            subtitle={l.subtitle}
+                            //leftAvatar={{source: {uri: l.avatar_url}}}
+                            title={l.username}
+                            subtitle={l.email}
                             onPress={()=> this.props.navigation.navigate('ViewMessage')}
                             bottomDivider
                         />

@@ -1,7 +1,6 @@
 import React from 'react';
-import { createAppContainer, StackActions, NavigationActions, createSwitchNavigator } from 'react-navigation'; // Version can be specified in package.json
+import { createAppContainer } from 'react-navigation';
 import { createStackNavigator} from 'react-navigation-stack';
-import {StyleSheet, Platform, Image, Text, View, Button} from 'react-native';
 import Loading from './Loading'
 import Register from './Register'
 import Login from './Login'
