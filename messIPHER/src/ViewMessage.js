@@ -15,18 +15,20 @@ import {chatClientService} from './services/chatClientService';
 
 
 export default class ViewMessage extends React.Component {
+
     chatkit = new chatClientService();
+
     inbox = [
         {
             key: '0',
             isCurrentUser: true,
-            msg: 'hello',
+            message: 'hello',
             username: 'me'
         },
         {
             isCurrentUser: false,
             key: '1',
-            msg: 'hey',
+            message: 'hey',
             username: 'them'
         }];
 
@@ -98,7 +100,7 @@ export default class ViewMessage extends React.Component {
                         </Text>
                     </View>
                     <View style={[styles.msg_body, styles[box_style]]}>
-                        <Text style={styles[`${box_style}_text`]}>{item.msg}</Text>
+                        <Text style={styles[`${box_style}_text`]}>{item.message}</Text>
                     </View>
                 {/*</View>*/}
             </View>
