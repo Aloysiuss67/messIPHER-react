@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleSheet, Platform, Image, Text, View, Button} from 'react-native';
-import {SearchBar, ListItem} from 'react-native-elements';
+import {SearchBar, ListItem, Icon} from 'react-native-elements';
 import firebase from 'react-native-firebase';
 
 export default class Main extends React.Component {
@@ -19,6 +19,21 @@ export default class Main extends React.Component {
             subtitle: 'Vice Chairman',
         },
     ];
+
+
+    static navigationOptions = ({ navigation }) => {
+        return {
+            headerRight: (
+                <Icon
+                    reverse
+                    name='ios-person-add'
+                    type='ionicon'
+                    color='#517aa4'
+                    size={17}
+                    onPress={() => navigation.navigate('FindFriends')} />
+            ),
+        };
+    }
 
     componentDidMount() {
         const {currentUser} = firebase.auth();
@@ -49,28 +64,24 @@ export default class Main extends React.Component {
                             leftAvatar={{source: {uri: l.avatar_url}}}
                             title={l.name}
                             subtitle={l.subtitle}
+                            onPress={()=> this.props.navigation.navigate('ViewMessage')}
                             bottomDivider
                         />
                     ))
                 }
                 <Button
+                    title="Go to Details"
+                    onPress={() => this.props.navigation.navigate('FindFriends')}
+                />
+                <Button
                     title="Logout"
                     onPress={() => firebase.auth().signOut()}
                 />
             </View>
-            // <View style={styles.container}>
-            //
-            //     <Text>
-            //         Hi {currentUser && currentUser.email}!
-            //     </Text>
-            //     <Button
-            //         title="Logout"
-            //         onPress={() => firebase.auth().signOut()}
-            //     />
-            // </View>
         );
     }
 }
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,

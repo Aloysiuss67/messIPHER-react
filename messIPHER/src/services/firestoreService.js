@@ -40,6 +40,40 @@ export function updateFriends() {
     return friends;
 }
 
+/**
+ * Searches the database for all the users. The generates items for all of them.
+ * Clicking on that item will attempt to add them as a friend and navigate to the
+ * message window.
+ * @param event input from search bar.
+ */
+
+export async function searchForNewFriends(searchFor){
+    let users = []
+    console.log(searchFor + " pre firebase")
+    await firebase.firestore().collection(`users`).get()
+        .then((snapshot) => {
+            snapshot.forEach((doc) => {
+                // checking for username and useremails.
+                if (doc.id.toLowerCase().includes(searchFor) || doc.get('username').toLowerCase().includes(searchFor)) {
+                    console.log(doc.id + "found this email")
+                    users.push({
+                        username: doc.get('username'),
+                        email: doc.id
+                    });
+                } else {
+                    // nothing matches search, do nothing
+                }
+            });
+        })
+        .catch((err) => {
+            console.error(err)
+        });
+    console.log(users.length + "post firebase")
+    return users
+}
+
+
+
 
 /**
  * Returns the pin of the current user.
