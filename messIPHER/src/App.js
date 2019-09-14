@@ -6,14 +6,15 @@ import Register from './Register'
 import Login from './Login'
 import Home from './Home'
 import FindFriends from './FindFriends'
-import ViewMessage from './ViewMessage';
+import ViewMessage from './ViewMessage'
+import Settings from './Settings'
+import ResetPass from './ResetPass'
 
 const AppNavigator = createStackNavigator({
     Home: {
         screen: Home,
         navigationOptions: {
             title: 'Chats',
-            headerLeft: null,
             gesturesEnabled: false,
         },
     },
@@ -23,11 +24,17 @@ const AppNavigator = createStackNavigator({
     ViewMessage: {
         screen: ViewMessage,
     },
+    Settings: {
+        screen: Settings,
+    },
     Loading: {
         screen: Loading,
     },
     Register: {
         screen: Register,
+    },
+    ResetPass: {
+        screen: ResetPass,
     },
     Login: {
         screen: Login,

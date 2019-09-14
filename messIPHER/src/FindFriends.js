@@ -5,25 +5,41 @@ import firebase from 'react-native-firebase';
 import {searchForNewFriends, updateFriends} from './services/firestoreService';
 import { makeNewRoom, addUsersToRoom } from './services/chatServerService';
 import {chatClientService} from './services/chatClientService';
-import {userDetails} from './services/authService';
 
 export default class FindFriends extends React.Component {
-    state = {currentUser: null, search: '', list: []};
+    state = {currentUser: null, search: '', list: [], chat: null};
     chatkit = new chatClientService();
-    username = '';
+    //username = '';
 
     avatar = 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'
 
     componentDidMount() {
         this.props.navigation.addListener("didFocus", async () => {
-            const currentUser = firebase.auth();
+            const currentUser = this.props.navigation.getParam('currentUserEmail')
             this.setState({currentUser: currentUser});
             console.log(this.props.navigation.getParam('chat'))
         })
 
+        // need to add listeners for auth change
+        firebase.auth().onAuthStateChanged(async ()=> {
+            let userEmail = this.props.navigation.getParam('currentUserEmail');
 
+            // if user it logged in, reset chat states
+            if (userEmail != null) {
+                // create new chat kits and connect with this email
+                this.chatkit = new chatClientService()
+
+                this.chatkit.connectToChat(userEmail)
+                // set state to contain reference to this chatkit
+                this.setState({ chat: this.chatkit})
+            }
+        })
     }
 
+    /**
+     * Called every time the search bar has text entered into it.
+     * @param search
+     */
     updateSearch = async search => {
         this.setState({search});
         if (search != '') {
@@ -50,7 +66,7 @@ export default class FindFriends extends React.Component {
             id: this.roomId,
             name: friend.username,
             currentUserEmail: this.props.navigation.getParam('currentUserEmail'),
-            chatkit: this.props.navigation.getParam('chat')
+            chat: this.state.chat
         })
     }
 
@@ -88,10 +104,9 @@ export default class FindFriends extends React.Component {
      */
     async addNewFriend(friend) {
         let userEmail = this.props.navigation.getParam('currentUserEmail')
-        let username = await firebase.firestore().doc(`users/${user}`).get()
+        let username = await firebase.firestore().doc(`users/${userEmail}`).get()
             .then(doc => {
                 return doc.get('username')
-                //this.username = doc.get('username');
             });
 
         // data stored on firestore
@@ -128,7 +143,7 @@ export default class FindFriends extends React.Component {
         // adds friend to that room as well
         addUsersToRoom(this.roomId, friend.email);
         // subscribes user to this new room, which should hook new messages
-        this.chatkit.connectToChat(userEmail);
+        this.state.chat.connectToChat(userEmail);
     }
 
 
