@@ -3,6 +3,7 @@ import { StyleSheet, Text, TextInput, View, Button } from 'react-native'
 import firebase from 'react-native-firebase'
 import {createNewChatUser} from './services/chatServerService'
 import {addNewUserToDB} from './services/firestoreService'
+import {WToast} from 'react-native-smart-tip';
 
 export default class SignUp extends React.Component {
     state = { name: '', email: '', password: '', confirmPassword: '', pin: '', errorMessage: null }
@@ -11,18 +12,50 @@ export default class SignUp extends React.Component {
         firebase
             .auth()
             .createUserWithEmailAndPassword(this.state.email, this.state.password)
-            .then(() => this.props.navigation.navigate('Main'))
-            .catch(error => this.setState({ errorMessage: error.message }))
-        let user = {
-            email: this.state.email,
-            name: this.state.name
-        }
-        // calls chatkit service agents to create new user
-        createNewChatUser(user)
-        // calls firestore service to add user data to db
-        addNewUserToDB(this.state)
+            .then(() => {
+                let user = {
+                    email: this.state.email.toLowerCase(),
+                    name: this.state.name.toLowerCase()
+                }
+                // calls chatkit service agents to create new user
+                createNewChatUser(user)
+                // calls firestore service to add user data to db
+                addNewUserToDB(this.state)
+                this.toastSuccessMessage('Account Created! Welcome ' + user.name)
+                this.props.navigation.navigate('Main', {currentUserEmail: user.email})
 
+            })
+            .catch(error => {
+                this.toastErrorMessage(error.message)
+                this.setState({ errorMessage: error.message })
+            })
 
+    }
+
+    /**
+     * Creates a toast notification for error messages
+     * @param message
+     */
+    toastErrorMessage = message => {
+        WToast.show({
+            data: message,
+            backgroundColor: '#bd3926',
+            duration: WToast.duration.SHORT,
+            position: WToast.position.TOP,
+        })
+    }
+
+    /**
+     * Creates a toast notification for success messages
+     * @param message
+     */
+    toastSuccessMessage = message => {
+        WToast.show({
+            data: message,
+            backgroundColor: '#2a7fbd',
+            duration: WToast.duration.SHORT,
+            position: WToast.position.TOP,
+        })
     }
 
     render() {

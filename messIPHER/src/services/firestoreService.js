@@ -92,7 +92,7 @@ export function resetPin(newPin) {
  * @param user
  */
 export function addNewUserToDB(user) {
-    firebase.firestore().doc(`users/${user.email}`).set({username: user.name, pin: user.pin})
+    firebase.firestore().doc(`users/${user.email.toLowerCase()}`).set({username: user.name, pin: user.pin})
         .then()
         .catch(err => console.log(err),
         );

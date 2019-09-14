@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet, Text, TextInput, View, Button } from 'react-native'
 import firebase from 'react-native-firebase'
+import {WToast} from 'react-native-smart-tip';
 
 
 export default class Login extends React.Component {
@@ -12,7 +13,19 @@ export default class Login extends React.Component {
             .auth()
             .signInWithEmailAndPassword(email, password)
             .then(() => this.props.navigation.navigate('Main', { currentUserEmail: email, chat: ''}))
-            .catch(error => this.setState({errorMessage: error.message}))
+            .catch(error => {
+                this.toastMessage(error.message)
+                this.setState({errorMessage: error.message})
+            })
+    }
+
+    toastMessage = message => {
+        WToast.show({
+            data: message,
+            backgroundColor: '#bd3926',
+            duration: WToast.duration.SHORT,
+            position: WToast.position.TOP,
+        })
     }
 
     render() {

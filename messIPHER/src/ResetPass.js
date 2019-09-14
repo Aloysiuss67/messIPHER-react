@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet, Text, TextInput, View, Button } from 'react-native'
 import {resetPassword} from './services/authService';
+import {WToast} from 'react-native-smart-tip'
 
 
 export default class ResetPass extends React.Component {
@@ -11,17 +12,26 @@ export default class ResetPass extends React.Component {
 
         resetPassword(email)
             .then(() =>  this.props.navigation.navigate('Login'))
-            .catch(error => this.setState({errorMessage: error.message}))
+            .catch(error => {
+                this.toastMessage(error.message)
+                this.setState({errorMessage: error.message})
+            })
+    }
+
+
+    toastMessage = message => {
+        WToast.show({
+            data: message,
+            backgroundColor: '#bd3926',
+            duration: WToast.duration.SHORT,
+            position: WToast.position.TOP,
+        })
     }
 
     render() {
         return (
             <View style={styles.container}>
-                <Text>Login</Text>
-                {this.state.errorMessage &&
-                <Text style={{ color: 'red' }}>
-                    {this.state.errorMessage}
-                </Text>}
+                <Text>Reset Password</Text>
                 <TextInput
                     style={styles.textInput}
                     autoCapitalize="none"
