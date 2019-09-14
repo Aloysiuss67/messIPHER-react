@@ -15,35 +15,40 @@ import {chatClientService} from './services/chatClientService';
 
 
 export default class ViewMessage extends React.Component {
+    state = {newMessage: ''};
+
+    inbox = [];
+
+    newMessage = '';
 
 
-    inbox = []
-
-    // inbox = [
-    //     {
-    //         key: '0',
-    //         isCurrentUser: true,
-    //         message: 'hello',
-    //         username: 'me'
-    //     },
-    //     {
-    //         isCurrentUser: false,
-    //         key: '1',
-    //         message: 'hey',
-    //         username: 'them'
-    //     }];
-
-
-    static navigationOptions = ({ navigation }) => {
+    static navigationOptions = ({navigation}) => {
         return {
-            title: navigation.getParam('name')
+            title: navigation.getParam('name'),
         };
-    }
+    };
 
 
     componentDidMount() {
     }
 
+    /**
+     * Sends the messages based on what is in the message input field.
+     */
+    sendMessage() {
+        let chat = this.props.navigation.getParam('chat');
+        let roomid = this.props.navigation.getParam('id');
+        if (this.state.newMessage.length !== 0) {
+            chat.sendMessage(this.state.newMessage, roomid).then(() => {
+                this.setState(this.setState({newMessage: ''}));
+                this.state.newMessage = '';
+            });
+        }
+    }
+
+    updateMessage = message => {
+        this.setState({newMessage: message});
+    };
 
     render() {
         const {refreshing = false} = this.props;
@@ -59,21 +64,23 @@ export default class ViewMessage extends React.Component {
                                 refreshing={this.props.refreshing}
                             />
                         }>
-                        <FlatList data={this.props.navigation.getParam('chat').getMessages(this.props.navigation.getParam('id'))} renderItem={this.renderItem} />
+                        <FlatList
+                            data={this.props.navigation.getParam('chat').getMessages(this.props.navigation.getParam('id'))}
+                            renderItem={this.renderItem}/>
                     </ScrollView>
 
                     <View style={styles.message_box}>
                         <TextInput
                             style={styles.text_field}
                             multiline={true}
-                            onChangeText={this.props.updateMessage}
-                            value={this.props.message}
+                            onChangeText={this.updateMessage}
+                            value={this.state.newMessage}
                             placeholder="Aa"
                         />
 
                         <View style={styles.button_container}>
                             {
-                                <TouchableOpacity onPress={() => console.log("i was sent")}>
+                                <TouchableOpacity onPress={() => this.sendMessage()}>
                                     <View style={styles.send_button}>
                                         <Text style={styles.send_button_text}>Send</Text>
                                     </View>
@@ -87,7 +94,7 @@ export default class ViewMessage extends React.Component {
     }
 
     renderItem = ({item}) => {
-        let isCurrentUser = (item.userID === this.props.navigation.getParam('currentUserEmail'))
+        let isCurrentUser = (item.userID === this.props.navigation.getParam('currentUserEmail'));
 
         let box_style = isCurrentUser ? 'current_user_msg' : 'other_user_msg';
         let username_style = isCurrentUser
@@ -97,14 +104,14 @@ export default class ViewMessage extends React.Component {
         return (
             <View key={item.key} style={styles.msg}>
                 {/*<View style={styles.msg_wrapper}>*/}
-                    <View style={styles.username}>
-                        <Text style={[styles.username_text, styles[username_style]]}>
-                            {this.props.navigation.getParam('name')}
-                        </Text>
-                    </View>
-                    <View style={[styles.msg_body, styles[box_style]]}>
-                        <Text style={styles[`${box_style}_text`]}>{item.message}</Text>
-                    </View>
+                <View style={styles.username}>
+                    <Text style={[styles.username_text, styles[username_style]]}>
+                        {this.props.navigation.getParam('name')}
+                    </Text>
+                </View>
+                <View style={[styles.msg_body, styles[box_style]]}>
+                    <Text style={styles[`${box_style}_text`]}>{item.message}</Text>
+                </View>
                 {/*</View>*/}
             </View>
         );
