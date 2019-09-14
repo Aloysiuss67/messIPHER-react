@@ -18,6 +18,7 @@ export default class FindFriends extends React.Component {
         this.props.navigation.addListener("didFocus", async () => {
             const currentUser = firebase.auth();
             this.setState({currentUser: currentUser});
+            console.log(this.props.navigation.getParam('chat'))
         })
 
 
@@ -48,6 +49,8 @@ export default class FindFriends extends React.Component {
         this.props.navigation.navigate('ViewMessage', {
             id: this.roomId,
             name: friend.username,
+            currentUserEmail: this.props.navigation.getParam('currentUserEmail'),
+            chatkit: this.props.navigation.getParam('chat')
         })
     }
 
@@ -59,7 +62,9 @@ export default class FindFriends extends React.Component {
      * @param friend the friend details they have searched for.
      */
     async checkIfFriends(friend) {
-        await firebase.firestore().collection(`users/${userDetails().email}/myFriends`).get()
+        let user = this.props.navigation.getParam('currentUserEmail')
+
+        await firebase.firestore().collection(`users/${user}/myFriends`).get()
             .then((snapshot) => {
                     snapshot.forEach((doc) => {
                         // are the users already friends?
@@ -82,8 +87,8 @@ export default class FindFriends extends React.Component {
      * this method will add them to their friend's list (and maybe generatee a chat token)
      */
     async addNewFriend(friend) {
-        let user = await userDetails()
-        let username = await firebase.firestore().doc(`users/${user.email}`).get()
+        let userEmail = this.props.navigation.getParam('currentUserEmail')
+        let username = await firebase.firestore().doc(`users/${user}`).get()
             .then(doc => {
                 return doc.get('username')
                 //this.username = doc.get('username');
@@ -91,7 +96,7 @@ export default class FindFriends extends React.Component {
 
         // data stored on firestore
         // user is automatically added to rooms they create
-        this.roomId = await makeNewRoom(user.email, user.email + friend.email);
+        this.roomId = await makeNewRoom(userEmail, userEmail + friend.email);
 
         let friendData = {
             chatToken: this.roomId,
@@ -103,7 +108,7 @@ export default class FindFriends extends React.Component {
         };
 
         // add friend to user's friends list
-        firebase.firestore().doc(`users/${user.email}/myFriends/${friend.email}`)
+        firebase.firestore().doc(`users/${userEmail}/myFriends/${friend.email}`)
             .set(friendData)
             .then(res => {
                 console.log("new friend added")
@@ -113,7 +118,7 @@ export default class FindFriends extends React.Component {
                 console.log(err)
             });
         // add user to friend's friends list
-        firebase.firestore().doc(`users/${friend.email}/myFriends/${user.email}`)
+        firebase.firestore().doc(`users/${friend.email}/myFriends/${userEmail}`)
             .set(userData)
             .then(res => {
             })
@@ -123,7 +128,7 @@ export default class FindFriends extends React.Component {
         // adds friend to that room as well
         addUsersToRoom(this.roomId, friend.email);
         // subscribes user to this new room, which should hook new messages
-        this.chatkit.connectToChat(user.email);
+        this.chatkit.connectToChat(userEmail);
     }
 
 

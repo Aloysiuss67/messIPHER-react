@@ -6,9 +6,10 @@ import {updateFriends} from './services/firestoreService'
 import {chatClientService} from './services/chatClientService';
 
 export default class Main extends React.Component {
-    state = {currentUser: null, search: '', friends: []};
+    state = {currentUser: null, search: '', friends: [], chat: null};
 
     chatkit = new chatClientService()
+
 
     avatar_url1 = 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'
     avatar_url2 = 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg'
@@ -36,7 +37,10 @@ export default class Main extends React.Component {
                     type='ionicon'
                     color='#517aa4'
                     size={17}
-                    onPress={() => navigation.navigate('FindFriends')} />
+                    onPress={() => navigation.navigate('FindFriends', {
+                        chat: chatkit,
+                        currentUserEmail : navigation.getParam('currentUserEmail')
+                    })} />
             ),
         };
     }
@@ -44,25 +48,33 @@ export default class Main extends React.Component {
 
 
     componentDidMount() {
-        firebase.auth().onAuthStateChanged(()=> {
-            const user = firebase.auth().currentUser;
+        let title = 'titledsjhalshd'
+        this.props.navigation.setParams({ title : title})
+
+        firebase.auth().onAuthStateChanged(async ()=> {
+            const user = await firebase.auth().currentUser;
+            this.currentUser = user.email
             this.setState({currentUser: user})
-            console.log("auth state changed")
+
+            console.log("auth state changed " + user.email)
             if (user != null) {
                 this.chatkit = new chatClientService()
                 this.chatkit.connectToChat(user.email)
+                this.props.navigation.setParams({chat: this.chatkit})
+                this.setState({ chat: this.chatkit})
             }
         })
 
         this.props.navigation.addListener("didFocus", async () => {
-            const user = firebase.auth().currentUser;
+            console.log(this.props.navigation.getParam('currentUserEmail') + ' user details ')
+            const user = await firebase.auth().currentUser;
             this.setState({friends: await updateFriends(user.email)})
         })
     }
 
     updateSearch = search => {
         this.setState({search: search});
-    };
+    }
 
     render() {
         const {currentUser, search} = this.state;

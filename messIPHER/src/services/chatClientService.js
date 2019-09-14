@@ -1,4 +1,3 @@
-import {Observable, BehaviorSubject} from 'rxjs';
 import {ChatManager, TokenProvider} from '@pusher/chatkit-client';
 import {getUserRooms} from './chatServerService';
 
@@ -7,11 +6,7 @@ export class chatClientService {
     // chat current user, very important for chatkit
     currentUser;
 
-    // unsure ill use these
-    //messagesSubject = new BehaviorSubject([]);
-    //
     // main list of messages
-    //inbox: Array<{ roomid; message; userID; }> = [];
     inbox = []
 
 
@@ -56,7 +51,6 @@ export class chatClientService {
             });
         }
         console.log(this.inbox)
-        //console.log(this.messagesSubject)
     }
 
 

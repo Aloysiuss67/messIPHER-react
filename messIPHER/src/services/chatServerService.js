@@ -7,7 +7,7 @@ import axios from 'axios';
 export function createNewChatUser(value) {
     let user = {
         name: value.name,
-        id: value.email,
+        id: value.email.toLowerCase(),
     };
     axios.post('http://localhost:5200/users', {user})
         .then(() => {
