@@ -8,7 +8,7 @@ export class chatClientService {
     currentUser;
 
     // unsure ill use these
-    messagesSubject = new BehaviorSubject([]);
+    //messagesSubject = new BehaviorSubject([]);
     //
     // main list of messages
     //inbox: Array<{ roomid; message; userID; }> = [];
@@ -50,12 +50,13 @@ export class chatClientService {
                             message: message.parts[0].payload.content,
                             userID: message.senderId,
                         });
-                        this.messagesSubject.next(this.inbox);
+                        //this.messagesSubject.next(this.inbox);
                     },
                 },
             });
         }
         console.log(this.inbox)
+        //console.log(this.messagesSubject)
     }
 
 
@@ -77,6 +78,7 @@ export class chatClientService {
      * @param roomId
      */
     async subscribeUserToRoom(roomId) {
+        console.log(roomId + " trying to subscribe user to room")
         await this.currentUser.subscribeToRoomMultipart({
             roomId: roomId,
             messagelimit: 50,
@@ -88,7 +90,7 @@ export class chatClientService {
                         message: message.parts[0].payload.content,
                         userID: message.senderId,
                     });
-                    this.messagesSubject.next(this.inbox);
+                    //this.messagesSubject.next(this.inbox);
                 },
             },
         });
@@ -104,7 +106,15 @@ export class chatClientService {
     /**
      * Getter for the behaviour subject collection of user messages.
      */
-    getMessages() {
-        return this.messagesSubject;
+    getMessages(roomId) {
+        let tempArray = []
+        let key = 0
+        this.inbox.forEach((i) =>{
+            if (i.roomid === roomId) {
+                i.key = (key++).toString()
+                tempArray.push(i)
+            }
+        })
+        return tempArray;
     }
 }
