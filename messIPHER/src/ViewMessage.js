@@ -16,29 +16,32 @@ import {chatClientService} from './services/chatClientService';
 
 export default class ViewMessage extends React.Component {
 
-    chatkit = new chatClientService();
 
-    inbox = [
-        {
-            key: '0',
-            isCurrentUser: true,
-            message: 'hello',
-            username: 'me'
-        },
-        {
-            isCurrentUser: false,
-            key: '1',
-            message: 'hey',
-            username: 'them'
-        }];
+    inbox = []
 
-    roomID = '4c76124c-1a09-48b5-97fc-17591b6e2e64';
+    // inbox = [
+    //     {
+    //         key: '0',
+    //         isCurrentUser: true,
+    //         message: 'hello',
+    //         username: 'me'
+    //     },
+    //     {
+    //         isCurrentUser: false,
+    //         key: '1',
+    //         message: 'hey',
+    //         username: 'them'
+    //     }];
+
+
+    static navigationOptions = ({ navigation }) => {
+        return {
+            title: navigation.getParam('name')
+        };
+    }
 
 
     componentDidMount() {
-        this.chatkit.getMessages().subscribe(messages => {
-            this.inbox = messages;
-        });
     }
 
 
@@ -51,14 +54,12 @@ export default class ViewMessage extends React.Component {
                     <ScrollView
                         style={styles.messages}
                         contentContainerStyle={styles.scroll_container}
-                        //ref={this.props.setScrollViewRef}
                         refreshControl={
                             <RefreshControl
                                 refreshing={this.props.refreshing}
-                                // onRefresh={this.props.loadPreviousMessages}
                             />
                         }>
-                        <FlatList data={this.inbox} renderItem={this.renderItem} />
+                        <FlatList data={this.props.navigation.getParam('chat').getMessages(this.props.navigation.getParam('id'))} renderItem={this.renderItem} />
                     </ScrollView>
 
                     <View style={styles.message_box}>
@@ -86,8 +87,10 @@ export default class ViewMessage extends React.Component {
     }
 
     renderItem = ({item}) => {
-        let box_style = item.isCurrentUser ? 'current_user_msg' : 'other_user_msg';
-        let username_style = item.isCurrentUser
+        let isCurrentUser = (item.userID === this.props.navigation.getParam('currentUserEmail'))
+
+        let box_style = isCurrentUser ? 'current_user_msg' : 'other_user_msg';
+        let username_style = isCurrentUser
             ? 'current_user_username'
             : 'other_user_username';
 
@@ -96,7 +99,7 @@ export default class ViewMessage extends React.Component {
                 {/*<View style={styles.msg_wrapper}>*/}
                     <View style={styles.username}>
                         <Text style={[styles.username_text, styles[username_style]]}>
-                            {item.username}
+                            {this.props.navigation.getParam('name')}
                         </Text>
                     </View>
                     <View style={[styles.msg_body, styles[box_style]]}>

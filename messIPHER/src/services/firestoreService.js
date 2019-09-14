@@ -29,7 +29,7 @@ export async function updateFriends(useremail) {
                 snapshot.forEach((doc) => {
                     // find all of the user's friends
                     friends.push({
-                        roomid: doc.get('chatToken'),
+                        roomId: doc.get('chatToken'),
                         username: doc.get('username'),
                         email: doc.id,
                     });

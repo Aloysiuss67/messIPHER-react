@@ -7,8 +7,8 @@ import {chatClientService} from './services/chatClientService';
 
 export default class Main extends React.Component {
     state = {currentUser: null, search: '', friends: []};
-    // friends = [];
-    chatkit = new chatClientService();
+
+    chatkit = new chatClientService()
 
     avatar_url1 = 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'
     avatar_url2 = 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg'
@@ -44,13 +44,18 @@ export default class Main extends React.Component {
 
 
     componentDidMount() {
+        firebase.auth().onAuthStateChanged(()=> {
+            const user = firebase.auth().currentUser;
+            this.setState({currentUser: user})
+            console.log("auth state changed")
+            if (user != null) {
+                this.chatkit = new chatClientService()
+                this.chatkit.connectToChat(user.email)
+            }
+        })
+
         this.props.navigation.addListener("didFocus", async () => {
             const user = firebase.auth().currentUser;
-            //this.setState(currentUser = user);
-            this.setState(() => {
-                return { currentUser: user }
-            })
-            this.chatkit.connectToChat(user.email) // FIXME
             this.setState({friends: await updateFriends(user.email)})
         })
     }
@@ -76,7 +81,12 @@ export default class Main extends React.Component {
                             leftAvatar={{source: {uri: this.avatar_url2}}}
                             title={l.username}
                             subtitle={l.email}
-                            onPress={()=> this.props.navigation.navigate('ViewMessage')}
+                            onPress={()=> this.props.navigation.navigate('ViewMessage', {
+                                id: l.roomId,
+                                name: l.username,
+                                chat: this.chatkit,
+                                currentUserEmail : this.state.currentUser.email
+                            })}
                             bottomDivider
                         />
                     ))
