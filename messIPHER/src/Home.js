@@ -38,9 +38,17 @@ export default class Main extends React.Component {
                     color='#517aa4'
                     size={17}
                     onPress={() => navigation.navigate('FindFriends', {
-                        chat: chatkit,
                         currentUserEmail : navigation.getParam('currentUserEmail')
                     })} />
+            ),
+            headerLeft: (
+                <Icon
+                    reverse
+                    name='ios-settings'
+                    type='ionicon'
+                    color='#517aa4'
+                    size={17}
+                    onPress={() => navigation.navigate('Settings')} />
             ),
         };
     }
@@ -48,30 +56,33 @@ export default class Main extends React.Component {
 
 
     componentDidMount() {
-        let title = 'titledsjhalshd'
-        this.props.navigation.setParams({ title : title})
-
+        // need to add listeners for auth change
         firebase.auth().onAuthStateChanged(async ()=> {
-            const user = await firebase.auth().currentUser;
-            this.currentUser = user.email
-            this.setState({currentUser: user})
+            console.log(this.props.navigation.getParam('currentUserEmail') + ' user details ')
+            let userEmail = this.props.navigation.getParam('currentUserEmail');
 
-            console.log("auth state changed " + user.email)
-            if (user != null) {
+            // if user it logged in, reset states
+            if (userEmail != null) {
+                this.setState({currentUser: userEmail})
+                // create new chat kits and connect with this email
                 this.chatkit = new chatClientService()
-                this.chatkit.connectToChat(user.email)
-                this.props.navigation.setParams({chat: this.chatkit})
+                this.chatkit.connectToChat(userEmail)
+                // set state to contain reference to this chatkit
                 this.setState({ chat: this.chatkit})
             }
         })
 
+        // called every time this pages takes focus, need to reset friends list
         this.props.navigation.addListener("didFocus", async () => {
-            console.log(this.props.navigation.getParam('currentUserEmail') + ' user details ')
-            const user = await firebase.auth().currentUser;
-            this.setState({friends: await updateFriends(user.email)})
+            let userEmail = this.props.navigation.getParam('currentUserEmail');
+            this.setState({friends: await updateFriends(userEmail)})
         })
     }
 
+    /**
+     * Called every time the search bar has text entered into it.
+     * @param search
+     */
     updateSearch = search => {
         this.setState({search: search});
     }
@@ -97,7 +108,7 @@ export default class Main extends React.Component {
                                 id: l.roomId,
                                 name: l.username,
                                 chat: this.chatkit,
-                                currentUserEmail : this.state.currentUser.email
+                                currentUserEmail : this.state.currentUser
                             })}
                             bottomDivider
                         />
