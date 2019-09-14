@@ -11,20 +11,22 @@ import {
     RefreshControl,
 } from 'react-native';
 
-import {chatClientService} from './services/chatClientService';
+import {HeaderBackButton} from 'react-navigation-stack';
 
 
 export default class ViewMessage extends React.Component {
     state = {newMessage: ''};
 
-    inbox = [];
-
-    newMessage = '';
-
-
     static navigationOptions = ({navigation}) => {
         return {
             title: navigation.getParam('name'),
+            headerLeft: (<HeaderBackButton
+                onPress={() => {
+                    navigation.navigate('Home', {
+                        currentUserEmail: navigation.getParam('currentUserEmail'),
+                        chat: navigation.getParam('chat'),
+                    });
+                }}/>),
         };
     };
 
@@ -40,8 +42,7 @@ export default class ViewMessage extends React.Component {
         let roomid = this.props.navigation.getParam('id');
         if (this.state.newMessage.length !== 0) {
             chat.sendMessage(this.state.newMessage, roomid).then(() => {
-                this.setState(this.setState({newMessage: ''}));
-                this.state.newMessage = '';
+                this.setState({newMessage: ''});
             });
         }
     }

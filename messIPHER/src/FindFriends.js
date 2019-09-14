@@ -9,31 +9,46 @@ import {chatClientService} from './services/chatClientService';
 export default class FindFriends extends React.Component {
     state = {currentUser: null, search: '', list: [], chat: null};
     chatkit = new chatClientService();
-    //username = '';
+    isMount = false
+
 
     avatar = 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'
 
     componentDidMount() {
-        this.props.navigation.addListener("didFocus", async () => {
+        // switch mount to true, to protect leaks on setState
+        this.isMount = true
+        // methods to call when page gets focus
+        this.props.navigation.addListener("didFocus", () => {
             const currentUser = this.props.navigation.getParam('currentUserEmail')
-            this.setState({currentUser: currentUser});
-            console.log(this.props.navigation.getParam('chat'))
+            if (this.isMount){
+                this.setState({currentUser: currentUser});
+                console.log(this.props.navigation.getParam('chat'))
+            }
+
         })
 
         // need to add listeners for auth change
-        firebase.auth().onAuthStateChanged(async ()=> {
-            let userEmail = this.props.navigation.getParam('currentUserEmail');
+        firebase.auth().onAuthStateChanged(()=> {
+            if (firebase.auth()) {
+                let userEmail = this.props.navigation.getParam('currentUserEmail');
 
-            // if user it logged in, reset chat states
-            if (userEmail != null) {
-                // create new chat kits and connect with this email
-                this.chatkit = new chatClientService()
+                // if user it logged in, reset chat states
+                if (userEmail != null) {
+                    // create new chat kits and connect with this email
+                    this.chatkit = new chatClientService()
 
-                this.chatkit.connectToChat(userEmail)
-                // set state to contain reference to this chatkit
-                this.setState({ chat: this.chatkit})
+                    this.chatkit.connectToChat(userEmail)
+                    // set state to contain reference to this chatkit
+                    if(this.isMount) {
+                        this.setState({chat: this.chatkit})
+                    }
+                }
             }
         })
+    }
+
+    componentWillUnmount() {
+        this.isMount = false;
     }
 
     /**
@@ -148,13 +163,12 @@ export default class FindFriends extends React.Component {
 
 
     render() {
-        const {currentUser, search} = this.state;
+        const { search} = this.state;
         return (
             <View>
                 <SearchBar
                     placeholder="Find new friends..."
                     onChangeText={this.updateSearch}
-                    // onClear={()=> this.list = []}
                     value={search}
                     platform={'ios'}
                 />
