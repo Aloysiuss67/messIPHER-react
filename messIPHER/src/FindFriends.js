@@ -12,8 +12,8 @@ export default class FindFriends extends React.Component {
     chatkit = new chatClientService();
     isMount = false
 
-
-    avatar = 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'
+    // server location for generating cute lil avatars
+    avatar_url = 'http://localhost:5200/myAvatars/45/'
 
 
     /**
@@ -95,8 +95,9 @@ export default class FindFriends extends React.Component {
         // do we need to add them as a friend
         if (!this.onFriendsList) {
             await this.addNewFriend(friend);
+            this.toastSuccessMessage("New Friend Added!")
         }
-        this.toastSuccessMessage("New Friend Added!")
+
         // move to message page
         this.props.navigation.navigate('ViewMessage', {
             id: this.roomId,
@@ -199,7 +200,7 @@ export default class FindFriends extends React.Component {
                     this.state.list.map((l, i) => (
                         <ListItem
                             key={i}
-                            leftAvatar={{source: {uri: this.avatar,}}}
+                            leftAvatar={{source: {uri: this.avatar_url + l.email,}}}
                             title={l.username}
                             subtitle={l.email}
                             bottomDivider
