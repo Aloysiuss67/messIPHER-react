@@ -34,6 +34,7 @@ export default class ViewMessage extends React.Component {
 
 
     componentDidMount() {
+        this.render()
     }
 
     /**
