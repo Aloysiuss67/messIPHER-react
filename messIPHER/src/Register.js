@@ -20,7 +20,8 @@ export default class SignUp extends React.Component {
     }
 
     /**
-     *
+     * Attempts to sign the user up, will present loading notifcation while it does so
+     * and present toasts for error messages
      */
     handleSignUp = () => {
         WModal.show(this.modalOpts)

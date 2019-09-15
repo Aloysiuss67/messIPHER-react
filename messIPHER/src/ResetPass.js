@@ -12,7 +12,6 @@ export default class ResetPass extends React.Component {
 
     handleReset = () => {
         const {email} = this.state
-
         resetPassword(email)
             .then(() =>  {
                 this.toastSuccessMessage("Reset Email Sent")
