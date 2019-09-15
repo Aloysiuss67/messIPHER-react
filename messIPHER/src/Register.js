@@ -1,14 +1,23 @@
 import React from 'react'
-import { StyleSheet, Text, TextInput, View, Button } from 'react-native'
+import {StyleSheet, Text, TextInput, View, Button, ActivityIndicator} from 'react-native';
 import firebase from 'react-native-firebase'
 import {createNewChatUser} from './services/chatServerService'
 import {addNewUserToDB} from './services/firestoreService'
-import {WToast} from 'react-native-smart-tip';
+import {WModal, WToast} from 'react-native-smart-tip';
 
 export default class SignUp extends React.Component {
     state = { name: '', email: '', password: '', confirmPassword: '', pin: '', errorMessage: null }
 
+    modalOpts = {
+        data: 'Logging you in...',
+        textColor: '#fff',
+        backgroundColor: '#444444',
+        position: WModal.position.CENTER,
+        icon: <ActivityIndicator color='#fff' size={'large'}/>
+    }
+
     handleSignUp = () => {
+        WModal.show(this.modalOpts)
         firebase
             .auth()
             .createUserWithEmailAndPassword(this.state.email, this.state.password)
@@ -62,10 +71,10 @@ export default class SignUp extends React.Component {
         return (
             <View style={styles.container}>
                 <Text>Sign Up</Text>
-                {this.state.errorMessage &&
-                <Text style={{ color: 'red' }}>
-                    {this.state.errorMessage}
-                </Text>}
+                {/*{this.state.errorMessage &&*/}
+                {/*<Text style={{ color: 'red' }}>*/}
+                {/*    {this.state.errorMessage}*/}
+                {/*</Text>}*/}
                 <TextInput
                     placeholder="Name"
                     autoCapitalize="none"

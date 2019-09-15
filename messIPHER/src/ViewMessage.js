@@ -12,10 +12,12 @@ import {
 } from 'react-native';
 
 import {HeaderBackButton} from 'react-navigation-stack';
+import DialogInput from 'react-native-dialog-input';
+import {getPin} from './services/firestoreService';
 
 
 export default class ViewMessage extends React.Component {
-    state = {newMessage: ''};
+    state = {newMessage: '', locked: true, showDialog: false};
 
     static navigationOptions = ({navigation}) => {
         return {
@@ -47,9 +49,55 @@ export default class ViewMessage extends React.Component {
         }
     }
 
+    /**
+     * Sends a locked messages based on what is in the message input field.
+     */
+    sendLockedMessage() {
+        let chat = this.props.navigation.getParam('chat');
+        let roomid = this.props.navigation.getParam('id');
+        if (this.state.newMessage.length !== 0) {
+            const lockMessage = '::LOCK::' + this.state.newMessage;
+            chat.sendMessage(lockMessage, roomid).then(() => {
+                this.setState({newMessage: ''});
+            });
+        }
+    }
+
+    /**
+     * If the messages are currently locked, this will open up a dialog box for users to enter their pin
+     * If the messages are unlocked, this will lock them
+     */
+    showDialog(){
+        if (this.state.locked) {
+            this.setState({showDialog: true})
+        }
+        else {
+            this.setState({locked: true} )
+        }
+    }
+
+    /**
+     * Calls the firebase agent to get the users pin, and if it matches the input, messages unlock
+     */
+    async unlock(inputText){
+        let userPin = await getPin()
+
+        if (userPin === inputText){
+            this.setState({
+                locked: !this.state.locked
+            })
+        }
+
+    }
+
+    /**
+     * Called every time the user inputs text, to store it locally.
+     */
     updateMessage = message => {
         this.setState({newMessage: message});
     };
+
+
 
     render() {
         const {refreshing = false} = this.props;
@@ -65,12 +113,33 @@ export default class ViewMessage extends React.Component {
                                 refreshing={this.props.refreshing}
                             />
                         }>
+                        <DialogInput isDialogVisible={this.state.showDialog}
+                                     title={"Unlock"}
+                                     message={"Confirm your pin"}
+                                     hintInput ={"Input pin here..."}
+                                     submitInput={ (inputText) => {
+                                         this.setState({showDialog: false})
+                                         this.unlock(inputText)
+                                     } }
+                                     closeDialog={ () => {
+                                         this.setState( {showDialog: false })
+                                     }}>
+                        </DialogInput>
                         <FlatList
                             data={this.props.navigation.getParam('chat').getMessages(this.props.navigation.getParam('id'))}
                             renderItem={this.renderItem}/>
                     </ScrollView>
 
                     <View style={styles.message_box}>
+                        <View style={styles.button_container}>
+                            {
+                                <TouchableOpacity onPress={() => this.showDialog()}>
+                                    <View style={styles.send_button}>
+                                        <Text style={styles.send_button_text}>Unlock</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            }
+                        </View>
                         <TextInput
                             style={styles.text_field}
                             multiline={true}
@@ -84,6 +153,13 @@ export default class ViewMessage extends React.Component {
                                 <TouchableOpacity onPress={() => this.sendMessage()}>
                                     <View style={styles.send_button}>
                                         <Text style={styles.send_button_text}>Send</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            }
+                            {
+                                <TouchableOpacity onPress={() => this.sendLockedMessage()}>
+                                    <View style={styles.send_button}>
+                                        <Text style={styles.send_button_text}>Lock</Text>
                                     </View>
                                 </TouchableOpacity>
                             }
@@ -102,6 +178,16 @@ export default class ViewMessage extends React.Component {
             ? 'current_user_username'
             : 'other_user_username';
 
+        let message = item.message;
+        if (message.substring(0,8) === '::LOCK::'){
+            if (this.state.locked){
+                message = 'I will see you at lunch'
+            }
+            else {
+                message = message.substring(8)
+            }
+        }
+
         return (
             <View key={item.key} style={styles.msg}>
                 {/*<View style={styles.msg_wrapper}>*/}
@@ -111,7 +197,7 @@ export default class ViewMessage extends React.Component {
                     </Text>
                 </View>
                 <View style={[styles.msg_body, styles[box_style]]}>
-                    <Text style={styles[`${box_style}_text`]}>{item.message}</Text>
+                    <Text style={styles[`${box_style}_text`]}>{message}</Text>
                 </View>
                 {/*</View>*/}
             </View>
@@ -123,15 +209,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 10,
         alignSelf: 'stretch',
-    },
-    leave_button: {
-        marginRight: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#FFF',
-    },
-    leave_button_text: {
-        color: '#FFF',
-        fontSize: 16,
     },
     body: {
         flex: 9,
@@ -188,13 +265,6 @@ const styles = StyleSheet.create({
         padding: 8,
         borderRadius: 10,
         maxWidth: 250,
-    },
-    typing_indicator: {
-        padding: 5,
-    },
-    typing_indicator_text: {
-        fontSize: 10,
-        color: '#ccc',
     },
     text_field: {
         height: 40,
