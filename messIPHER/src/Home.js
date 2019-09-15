@@ -39,6 +39,7 @@ export default class Main extends React.Component {
                     size={17}
                     onPress={() => navigation.navigate('FindFriends', {
                         currentUserEmail: navigation.getParam('currentUserEmail'),
+                        func: navigation.getParam('getChatKit')
                     })}/>
             ),
             headerLeft: (
@@ -54,19 +55,30 @@ export default class Main extends React.Component {
     };
 
     /**
+     * Function used by child to get parent's chatkit
+     */
+    _getChatKit = () => {
+        return this.state.chat
+    }
+
+    /**
      * Adds listeners for screen focus and auth change. On screen focus we update the users list of friends
      * on auth change we reset all private fields. This presents a loading notifcation while fucntioning.
      */
     componentDidMount() {
+        this.props.navigation.setParams({
+            getChatKit: this._getChatKit,
+        })
         this.isMount = true;
         WModal.hide()
         // need to add listeners for auth change
+        WModal.show(this.modalOpts)
         firebase.auth().onAuthStateChanged(async () => {
             if (this.isMount) {
                 this.setState({friends: []});
             }
-            WModal.show(this.modalOpts)
             if (firebase.auth()) {
+
                 console.log(this.props.navigation.getParam('currentUserEmail') + ' user details ');
                 let userEmail = this.props.navigation.getParam('currentUserEmail');
 

@@ -3,17 +3,17 @@ import {StyleSheet, Platform, Image, Text, View, Button} from 'react-native';
 import {SearchBar, ListItem} from 'react-native-elements';
 import firebase from 'react-native-firebase';
 import {searchForNewFriends} from './services/firestoreService';
-import { makeNewRoom, addUsersToRoom } from './services/chatServerService';
+import {makeNewRoom, addUsersToRoom} from './services/chatServerService';
 import {chatClientService} from './services/chatClientService';
 import {WToast} from 'react-native-smart-tip';
 
 export default class FindFriends extends React.Component {
-    state = {currentUser: null, search: '', list: [], chat: null};
+    state = {currentUser: null, search: '', list: [], chat: null, roomId: '', onFriendsList: false};
     chatkit = new chatClientService();
-    isMount = false
+    isMount = false;
 
     // server location for generating cute lil avatars
-    avatar_url = 'http://localhost:5200/myAvatars/45/'
+    avatar_url = 'http://localhost:5200/myAvatars/45/';
 
 
     /**
@@ -21,34 +21,32 @@ export default class FindFriends extends React.Component {
      * on auth change we reset all private fields.
      */
     componentDidMount() {
+        //this.chatkit = new chatClientService()
         // switch mount to true, to protect leaks on setState
-        this.isMount = true
+        this.isMount = true;
         // methods to call when page gets focus
-        this.props.navigation.addListener("didFocus", () => {
-            const currentUser = this.props.navigation.getParam('currentUserEmail')
-            if (this.isMount){
+        this.props.navigation.addListener('didFocus', () => {
+            const currentUser = this.props.navigation.getParam('currentUserEmail');
+            if (this.isMount) {
                 this.setState({currentUser: currentUser});
             }
-        })
+        });
 
         // need to add listeners for auth change
-        firebase.auth().onAuthStateChanged(()=> {
+        firebase.auth().onAuthStateChanged(() => {
             if (firebase.auth()) {
+                // get chatkit from parent
+                this.chatkit = this.props.navigation.getParam('func')();
                 let userEmail = this.props.navigation.getParam('currentUserEmail');
 
-                // if user it logged in, reset chat states
-                if (userEmail != null) {
-                    // create new chat kits and connect with this email
-                    this.chatkit = new chatClientService()
-
-                    this.chatkit.connectToChat(userEmail)
-                    // set state to contain reference to this chatkit
-                    if(this.isMount) {
-                        this.setState({chat: this.chatkit})
-                    }
+                // this.chatkit.connectToChat(userEmail)
+                // set state to contain reference to this chatkit
+                if (this.isMount) {
+                    this.setState({chat: this.chatkit});
                 }
+
             }
-        })
+        });
     }
 
     /**
@@ -68,8 +66,8 @@ export default class FindFriends extends React.Component {
             backgroundColor: '#2a7fbd',
             duration: WToast.duration.SHORT,
             position: WToast.position.TOP,
-        })
-    }
+        });
+    };
 
     /**
      * Called every time the search bar has text entered into it.
@@ -78,12 +76,12 @@ export default class FindFriends extends React.Component {
     updateSearch = async search => {
         this.setState({search});
         if (search != '') {
-            let temp = search.toLowerCase()
+            let temp = search.toLowerCase();
             await searchForNewFriends(temp).then((users) => {
-                    console.log(users.length)
-                    this.setState({list: users})
-                }
-            )
+                    console.log(users.length);
+                    this.setState({list: users});
+                },
+            );
         }
     };
 
@@ -93,18 +91,18 @@ export default class FindFriends extends React.Component {
     async viewMessage(friend) {
         const check = await this.checkIfFriends(friend);
         // do we need to add them as a friend
-        if (!this.onFriendsList) {
+        if (!this.state.onFriendsList) {
             await this.addNewFriend(friend);
-            this.toastSuccessMessage("New Friend Added!")
+            this.toastSuccessMessage('New Friend Added!');
         }
-
+        console.log(this.state.roomId);
         // move to message page
         this.props.navigation.navigate('ViewMessage', {
-            id: this.roomId,
+            id: this.state.roomId,
             name: friend.username,
             currentUserEmail: this.props.navigation.getParam('currentUserEmail'),
-            chat: this.state.chat
-        })
+            chat: this.state.chat,
+        });
     }
 
 
@@ -115,19 +113,19 @@ export default class FindFriends extends React.Component {
      * @param friend the friend details they have searched for.
      */
     async checkIfFriends(friend) {
-        let user = this.props.navigation.getParam('currentUserEmail')
+        let user = this.props.navigation.getParam('currentUserEmail');
 
         await firebase.firestore().collection(`users/${user}/myFriends`).get()
             .then((snapshot) => {
                     snapshot.forEach((doc) => {
                         // are the users already friends?
                         if (doc.id.includes(friend.email)) {
-                            this.roomId = doc.get('chatToken');
-                            this.onFriendsList = true;
+                            let tempRoomId = doc.get('chatToken');
+                            this.setState({roomId: tempRoomId, onFriendsList: true});
                             return;
                         }
                     });
-                }
+                },
             )
             .catch((err) => {
             });
@@ -140,10 +138,10 @@ export default class FindFriends extends React.Component {
      * this method will add them to their friend's list (and maybe generatee a chat token)
      */
     async addNewFriend(friend) {
-        let userEmail = this.props.navigation.getParam('currentUserEmail')
+        let userEmail = this.props.navigation.getParam('currentUserEmail');
         let username = await firebase.firestore().doc(`users/${userEmail}`).get()
             .then(doc => {
-                return doc.get('username')
+                return doc.get('username');
             });
 
         // data stored on firestore
@@ -152,22 +150,22 @@ export default class FindFriends extends React.Component {
 
         let friendData = {
             chatToken: this.roomId,
-            username: friend.username
+            username: friend.username,
         };
         let userData = {
             chatToken: this.roomId,
-            username: username
+            username: username,
         };
 
         // add friend to user's friends list
         firebase.firestore().doc(`users/${userEmail}/myFriends/${friend.email}`)
             .set(friendData)
             .then(res => {
-                console.log("new friend added")
+                console.log('new friend added');
                 // this.presentToast('New Friend added');
             })
             .catch((err) => {
-                console.log(err)
+                console.log(err);
             });
         // add user to friend's friends list
         firebase.firestore().doc(`users/${friend.email}/myFriends/${userEmail}`)
@@ -175,7 +173,7 @@ export default class FindFriends extends React.Component {
             .then(res => {
             })
             .catch((err) => {
-                console.log(err)
+                console.log(err);
             });
         // adds friend to that room as well
         addUsersToRoom(this.roomId, friend.email);
@@ -187,7 +185,7 @@ export default class FindFriends extends React.Component {
 
 
     render() {
-        const { search} = this.state;
+        const {search} = this.state;
         return (
             <View>
                 <SearchBar
@@ -200,13 +198,13 @@ export default class FindFriends extends React.Component {
                     this.state.list.map((l, i) => (
                         <ListItem
                             key={i}
-                            leftAvatar={{source: {uri: this.avatar_url + l.email,}}}
+                            leftAvatar={{source: {uri: this.avatar_url + l.email}}}
                             title={l.username}
                             subtitle={l.email}
                             bottomDivider
-                            onPress={()=> this.viewMessage({
+                            onPress={() => this.viewMessage({
                                 email: l.email,
-                                username: l.username
+                                username: l.username,
                             })}
                         />
                     ))
