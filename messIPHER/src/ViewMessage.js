@@ -34,7 +34,6 @@ export default class ViewMessage extends React.Component {
 
 
     componentDidMount() {
-        this.render()
     }
 
     /**
@@ -105,6 +104,18 @@ export default class ViewMessage extends React.Component {
 
         return (
             <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
+                <DialogInput isDialogVisible={this.state.showDialog}
+                             title={"Unlock"}
+                             message={"Confirm your pin"}
+                             hintInput ={"Input pin here..."}
+                             submitInput={ (inputText) => {
+                                 this.setState({showDialog: false})
+                                 this.unlock(inputText)
+                             } }
+                             closeDialog={ () => {
+                                 this.setState( {showDialog: false })
+                             }}>
+                </DialogInput>
                 <View style={styles.body}>
                     <ScrollView
                         style={styles.messages}
@@ -114,18 +125,6 @@ export default class ViewMessage extends React.Component {
                                 refreshing={this.props.refreshing}
                             />
                         }>
-                        <DialogInput isDialogVisible={this.state.showDialog}
-                                     title={"Unlock"}
-                                     message={"Confirm your pin"}
-                                     hintInput ={"Input pin here..."}
-                                     submitInput={ (inputText) => {
-                                         this.setState({showDialog: false})
-                                         this.unlock(inputText)
-                                     } }
-                                     closeDialog={ () => {
-                                         this.setState( {showDialog: false })
-                                     }}>
-                        </DialogInput>
                         <FlatList
                             data={this.props.navigation.getParam('chat').getMessages(this.props.navigation.getParam('id'))}
                             renderItem={this.renderItem}/>
@@ -211,9 +210,9 @@ const styles = StyleSheet.create({
         flex: 10,
         alignSelf: 'stretch',
     },
-    body: {
-        flex: 9,
-    },
+        body: {
+            flex: 9,
+        },
     scroll_container: {
         paddingBottom: 20,
     },
