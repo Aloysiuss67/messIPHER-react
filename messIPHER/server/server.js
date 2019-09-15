@@ -4,6 +4,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const Chatkit = require('@pusher/chatkit-server');
+const avatarsMiddleware = require('adorable-avatars')
+
 
 const app = express();
 
@@ -12,6 +14,7 @@ const chatkit = new Chatkit.default({
     key: process.env.CHATKIT_SECRET_KEY,
 });
 
+app.use('/myAvatars', avatarsMiddleware);
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

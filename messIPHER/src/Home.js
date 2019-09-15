@@ -20,9 +20,8 @@ export default class Main extends React.Component {
         icon: <ActivityIndicator color='#fff' size={'large'}/>
     }
 
-
-    avatar_url1 = 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg';
-    avatar_url2 = 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg';
+    // server location for generating cute lil avatars
+    avatar_url = 'http://localhost:5200/myAvatars/45/'
 
     /**
      * Overrides for the naviagtions options. Adds buttons for settings and find friends
@@ -172,7 +171,7 @@ export default class Main extends React.Component {
                     this.state.friends.map((l, i) => (
                         <ListItem
                             key={i}
-                            leftAvatar={{source: {uri: this.avatar_url2}}}
+                            leftAvatar={{source: {uri: this.avatar_url + l.email}}}
                             title={l.username}
                             subtitle={l.email}
                             onPress={() => this.props.navigation.navigate('ViewMessage', {
