@@ -2,11 +2,15 @@ import React from 'react'
 import { StyleSheet, Text, TextInput, View, Button, ActivityIndicator } from 'react-native'
 import firebase from 'react-native-firebase'
 import {WToast, WModal} from 'react-native-smart-tip';
+import {Avatar} from 'react-native-elements';
 
 
 export default class Login extends React.Component {
     state = { email: '', password: '', errorMessage: null }
+    // server location for generating cute lil avatars
+    avatar_url = 'http://localhost:5200/myAvatars/100/';
 
+    // loading pop up notification
     modalOpts = {
         data: 'Logging you in...',
         textColor: '#fff',
@@ -15,6 +19,9 @@ export default class Login extends React.Component {
         icon: <ActivityIndicator color='#fff' size={'large'}/>
     }
 
+    /**
+     * Attempts to log in a user using their firebase credentials supplied from a form.
+     */
     handleLogin = () => {
         const {email, password} = this.state
         WModal.show(this.modalOpts)
@@ -33,10 +40,10 @@ export default class Login extends React.Component {
             })
     }
 
-    show = () => {
-        WModal.show(this.modalOpts)
-    }
 
+    /**
+     * presents toast message for errors.
+     */
     toastMessage = message => {
         WToast.show({
             data: message,
@@ -49,11 +56,14 @@ export default class Login extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                <Text>Login</Text>
-                {/*{this.state.errorMessage &&*/}
-                {/*<Text style={{ color: 'red' }}>*/}
-                {/*    {this.state.errorMessage}*/}
-                {/*</Text>}*/}
+                <Avatar
+                    size='xlarge'
+                    rounded
+                    source={{
+                        uri: this.avatar_url + this.state.email,
+                    }}
+                />
+                <Text style={styles.headerStyle}>Welcome to messIPHER</Text>
                 <TextInput
                     style={styles.textInput}
                     autoCapitalize="none"
@@ -95,5 +105,9 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         borderWidth: 1,
         marginTop: 8
+    },
+    headerStyle: {
+        fontSize: 24,
+        paddingTop: 20
     }
 })

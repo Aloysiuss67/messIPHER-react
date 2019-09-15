@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Platform, Image, Text, View, Button, ActivityIndicator} from 'react-native';
+import {StyleSheet, View, ActivityIndicator} from 'react-native';
 import {SearchBar, ListItem, Icon} from 'react-native-elements';
 import firebase from 'react-native-firebase';
 import {updateFriends} from './services/firestoreService';
@@ -49,7 +49,9 @@ export default class Main extends React.Component {
                     type='ionicon'
                     color='#517aa4'
                     size={17}
-                    onPress={() => navigation.navigate('Settings')}/>
+                    onPress={() => navigation.navigate('Settings', {
+                        currentUserEmail: navigation.getParam('currentUserEmail'),
+                    })}/>
             ),
         };
     };
@@ -196,15 +198,6 @@ export default class Main extends React.Component {
                         />
                     ))
                 }
-                <Button
-                    title="Logout"
-                    onPress={() => {
-                        if (this.isMount){
-                            this.setState({currentUser: null, friends: []});
-                        }
-                        firebase.auth().signOut();
-                    }}
-                />
             </View>
         );
     }

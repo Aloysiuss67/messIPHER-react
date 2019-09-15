@@ -20,21 +20,33 @@ const AppNavigator = createStackNavigator({
     },
     FindFriends: {
         screen: FindFriends,
+        navigationOptions: {
+            title: 'Find Friends',
+        },
     },
     ViewMessage: {
         screen: ViewMessage,
     },
     Settings: {
         screen: Settings,
+        navigationOptions: {
+            title: 'Settings',
+        },
     },
     Loading: {
         screen: Loading,
     },
     Register: {
         screen: Register,
+        navigationOptions: {
+            title: 'Register',
+        },
     },
     ResetPass: {
         screen: ResetPass,
+        navigationOptions: {
+            title: 'Reset Password',
+        },
     },
     Login: {
         screen: Login,

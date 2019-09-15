@@ -60,14 +60,6 @@ export function resetPassword(useremail) {
 }
 
 
-/**
- * Creates an avatar for the new user.
- */
-export function getRandomAvatar(){
-    let avatar_url1 = 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg';
-    let avatar_url2 = 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg';
-}
-
 
 
 /**

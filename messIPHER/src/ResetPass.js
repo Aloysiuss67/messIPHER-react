@@ -2,10 +2,13 @@ import React from 'react'
 import { StyleSheet, Text, TextInput, View, Button } from 'react-native'
 import {resetPassword} from './services/authService';
 import {WToast} from 'react-native-smart-tip'
+import {Avatar} from 'react-native-elements';
 
 
 export default class ResetPass extends React.Component {
     state = { email: '', errorMessage: null }
+    // server location for generating cute lil avatars
+    avatar_url = 'http://localhost:5200/myAvatars/100/';
 
     handleReset = () => {
         const {email} = this.state
@@ -51,7 +54,14 @@ export default class ResetPass extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                <Text>Reset Password</Text>
+                <Avatar
+                    size='xlarge'
+                    rounded
+                    source={{
+                        uri: this.avatar_url + this.state.email,
+                    }}
+                />
+                <Text style={styles.headerStyle}>Reset Password</Text>
                 <TextInput
                     style={styles.textInput}
                     autoCapitalize="none"
@@ -85,5 +95,9 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         borderWidth: 1,
         marginTop: 8
+    },
+    headerStyle: {
+        fontSize: 24,
+        paddingTop: 20
     }
 })

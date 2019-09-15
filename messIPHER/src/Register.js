@@ -4,9 +4,12 @@ import firebase from 'react-native-firebase'
 import {createNewChatUser} from './services/chatServerService'
 import {addNewUserToDB} from './services/firestoreService'
 import {WModal, WToast} from 'react-native-smart-tip';
+import {Avatar} from 'react-native-elements';
 
 export default class SignUp extends React.Component {
     state = { name: '', email: '', password: '', confirmPassword: '', pin: '', errorMessage: null }
+    // server location for generating cute lil avatars
+    avatar_url = 'http://localhost:5200/myAvatars/100/';
 
     modalOpts = {
         data: 'Logging you in...',
@@ -16,6 +19,9 @@ export default class SignUp extends React.Component {
         icon: <ActivityIndicator color='#fff' size={'large'}/>
     }
 
+    /**
+     *
+     */
     handleSignUp = () => {
         WModal.show(this.modalOpts)
         firebase
@@ -70,11 +76,14 @@ export default class SignUp extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                <Text>Sign Up</Text>
-                {/*{this.state.errorMessage &&*/}
-                {/*<Text style={{ color: 'red' }}>*/}
-                {/*    {this.state.errorMessage}*/}
-                {/*</Text>}*/}
+                <Avatar
+                    size='xlarge'
+                    rounded
+                    source={{
+                        uri: this.avatar_url + this.state.email,
+                    }}
+                />
+                <Text style={styles.headerStyle}>Sign Up</Text>
                 <TextInput
                     placeholder="Name"
                     autoCapitalize="none"
@@ -135,5 +144,9 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         borderWidth: 1,
         marginTop: 8
+    },
+    headerStyle: {
+        fontSize: 24,
+        paddingTop: 20
     }
 })
