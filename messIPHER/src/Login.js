@@ -1,22 +1,40 @@
 import React from 'react'
-import { StyleSheet, Text, TextInput, View, Button } from 'react-native'
+import { StyleSheet, Text, TextInput, View, Button, ActivityIndicator } from 'react-native'
 import firebase from 'react-native-firebase'
-import {WToast} from 'react-native-smart-tip';
+import {WToast, WModal} from 'react-native-smart-tip';
 
 
 export default class Login extends React.Component {
     state = { email: '', password: '', errorMessage: null }
 
+    modalOpts = {
+        data: 'Logging you in...',
+        textColor: '#fff',
+        backgroundColor: '#444444',
+        position: WModal.position.CENTER,
+        icon: <ActivityIndicator color='#fff' size={'large'}/>
+    }
+
     handleLogin = () => {
         const {email, password} = this.state
+        WModal.show(this.modalOpts)
         firebase
             .auth()
             .signInWithEmailAndPassword(email, password)
-            .then(() => this.props.navigation.navigate('Main', { currentUserEmail: email, chat: ''}))
+            .then(() => {
+
+                    this.props.navigation.navigate('Main', {currentUserEmail: email, chat: ''})
+                }
+            )
             .catch(error => {
+                WModal.hide()
                 this.toastMessage(error.message)
                 this.setState({errorMessage: error.message})
             })
+    }
+
+    show = () => {
+        WModal.show(this.modalOpts)
     }
 
     toastMessage = message => {
@@ -32,10 +50,10 @@ export default class Login extends React.Component {
         return (
             <View style={styles.container}>
                 <Text>Login</Text>
-                {this.state.errorMessage &&
-                <Text style={{ color: 'red' }}>
-                    {this.state.errorMessage}
-                </Text>}
+                {/*{this.state.errorMessage &&*/}
+                {/*<Text style={{ color: 'red' }}>*/}
+                {/*    {this.state.errorMessage}*/}
+                {/*</Text>}*/}
                 <TextInput
                     style={styles.textInput}
                     autoCapitalize="none"

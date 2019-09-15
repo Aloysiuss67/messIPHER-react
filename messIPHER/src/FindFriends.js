@@ -2,9 +2,10 @@ import React from 'react';
 import {StyleSheet, Platform, Image, Text, View, Button} from 'react-native';
 import {SearchBar, ListItem} from 'react-native-elements';
 import firebase from 'react-native-firebase';
-import {searchForNewFriends, updateFriends} from './services/firestoreService';
+import {searchForNewFriends} from './services/firestoreService';
 import { makeNewRoom, addUsersToRoom } from './services/chatServerService';
 import {chatClientService} from './services/chatClientService';
+import {WToast} from 'react-native-smart-tip';
 
 export default class FindFriends extends React.Component {
     state = {currentUser: null, search: '', list: [], chat: null};
@@ -14,6 +15,11 @@ export default class FindFriends extends React.Component {
 
     avatar = 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'
 
+
+    /**
+     * Adds listeners for screen focus and auth change. On screen focus we update the current users
+     * on auth change we reset all private fields.
+     */
     componentDidMount() {
         // switch mount to true, to protect leaks on setState
         this.isMount = true
@@ -22,9 +28,7 @@ export default class FindFriends extends React.Component {
             const currentUser = this.props.navigation.getParam('currentUserEmail')
             if (this.isMount){
                 this.setState({currentUser: currentUser});
-                console.log(this.props.navigation.getParam('chat'))
             }
-
         })
 
         // need to add listeners for auth change
@@ -47,8 +51,24 @@ export default class FindFriends extends React.Component {
         })
     }
 
+    /**
+     * Boolean flag for unmount so not to mem leak.
+     */
     componentWillUnmount() {
         this.isMount = false;
+    }
+
+    /**
+     * Creates a toast notification for success messages
+     * @param message
+     */
+    toastSuccessMessage = message => {
+        WToast.show({
+            data: message,
+            backgroundColor: '#2a7fbd',
+            duration: WToast.duration.SHORT,
+            position: WToast.position.TOP,
+        })
     }
 
     /**
@@ -76,6 +96,7 @@ export default class FindFriends extends React.Component {
         if (!this.onFriendsList) {
             await this.addNewFriend(friend);
         }
+        this.toastSuccessMessage("New Friend Added!")
         // move to message page
         this.props.navigation.navigate('ViewMessage', {
             id: this.roomId,
@@ -160,6 +181,8 @@ export default class FindFriends extends React.Component {
         // subscribes user to this new room, which should hook new messages
         this.state.chat.connectToChat(userEmail);
     }
+
+// ------------------------- METHODS FOR RENDER AND STYLES BELOW
 
 
     render() {

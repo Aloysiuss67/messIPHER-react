@@ -11,7 +11,10 @@ export default class ResetPass extends React.Component {
         const {email} = this.state
 
         resetPassword(email)
-            .then(() =>  this.props.navigation.navigate('Login'))
+            .then(() =>  {
+                this.toastSuccessMessage("Reset Email Sent")
+                this.props.navigation.navigate('Login')
+            })
             .catch(error => {
                 this.toastMessage(error.message)
                 this.setState({errorMessage: error.message})
@@ -19,10 +22,27 @@ export default class ResetPass extends React.Component {
     }
 
 
+    /**
+     * Creates a toast notification for error messages
+     * @param message
+     */
     toastMessage = message => {
         WToast.show({
             data: message,
             backgroundColor: '#bd3926',
+            duration: WToast.duration.SHORT,
+            position: WToast.position.TOP,
+        })
+    }
+
+    /**
+     * Creates a toast notification for success messages
+     * @param message
+     */
+    toastSuccessMessage = message => {
+        WToast.show({
+            data: message,
+            backgroundColor: '#2a7fbd',
             duration: WToast.duration.SHORT,
             position: WToast.position.TOP,
         })

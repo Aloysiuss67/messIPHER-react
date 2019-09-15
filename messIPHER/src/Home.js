@@ -1,19 +1,34 @@
 import React from 'react';
-import {StyleSheet, Platform, Image, Text, View, Button} from 'react-native';
+import {StyleSheet, Platform, Image, Text, View, Button, ActivityIndicator} from 'react-native';
 import {SearchBar, ListItem, Icon} from 'react-native-elements';
 import firebase from 'react-native-firebase';
 import {updateFriends} from './services/firestoreService';
 import {chatClientService} from './services/chatClientService';
+import {WModal, WToast} from 'react-native-smart-tip';
 
 export default class Main extends React.Component {
     state = {currentUser: null, search: '', friends: [], chat: null};
     isMount = false;
     chatkit = new chatClientService();
 
+    // the loading notifcation for fetching from apis
+    modalOpts = {
+        data: 'Playing fetch...',
+        textColor: '#fff',
+        backgroundColor: '#444444',
+        position: WModal.position.CENTER,
+        icon: <ActivityIndicator color='#fff' size={'large'}/>
+    }
+
 
     avatar_url1 = 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg';
     avatar_url2 = 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg';
 
+    /**
+     * Overrides for the naviagtions options. Adds buttons for settings and find friends
+     * @param navigation
+     * @return {{headerRight: *, headerLeft: *}}
+     */
     static navigationOptions = ({navigation}) => {
         return {
             headerRight: (
@@ -39,11 +54,19 @@ export default class Main extends React.Component {
         };
     };
 
-
+    /**
+     * Adds listeners for screen focus and auth change. On screen focus we update the users list of friends
+     * on auth change we reset all private fields. This presents a loading notifcation while fucntioning.
+     */
     componentDidMount() {
         this.isMount = true;
+        WModal.hide()
         // need to add listeners for auth change
-        firebase.auth().onAuthStateChanged(() => {
+        firebase.auth().onAuthStateChanged(async () => {
+            if (this.isMount) {
+                this.setState({friends: []});
+            }
+            WModal.show(this.modalOpts)
             if (firebase.auth()) {
                 console.log(this.props.navigation.getParam('currentUserEmail') + ' user details ');
                 let userEmail = this.props.navigation.getParam('currentUserEmail');
@@ -52,9 +75,10 @@ export default class Main extends React.Component {
                 if (userEmail != null) {
                     // create new chat kits and connect with this email
                     this.chatkit = new chatClientService();
-                    this.chatkit.connectToChat(userEmail);
+                    await this.chatkit.connectToChat(userEmail);
                     // set state to contain reference to this chatkit
                     if (this.isMount) {
+                        WModal.hide()
                         this.setState({chat: this.chatkit});
                         this.setState({currentUser: userEmail});
                     }
@@ -65,7 +89,7 @@ export default class Main extends React.Component {
         // called every time this pages takes focus, need to reset friends list
         this.props.navigation.addListener('didFocus', async () => {
             let userEmail = this.props.navigation.getParam('currentUserEmail');
-
+            console.log(this.props.navigation.getParam('chat'))
             if (this.props.navigation.getParam('chat') != null){
                 // new chatkit is potentiall created in find friends, need to update
                 if (this.isMount) {
