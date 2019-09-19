@@ -70,10 +70,6 @@ export default class ResetPass extends React.Component {
                 />
                 <Button title="Request Reset" onPress={this.handleReset} />
                 <Button
-                    title="Don't have an account? Sign Up"
-                    onPress={() => this.props.navigation.navigate('Register')}
-                />
-                <Button
                     title="Remembered your password? Login"
                     onPress={() => this.props.navigation.navigate('Login')}
                 />
