@@ -1,13 +1,13 @@
-import React from 'react'
+import React from 'react';
 import {StyleSheet, Text, TextInput, View, Button, ActivityIndicator} from 'react-native';
-import firebase from 'react-native-firebase'
-import {createNewChatUser} from './services/chatServerService'
-import {addNewUserToDB} from './services/firestoreService'
+import firebase from 'react-native-firebase';
+import {createNewChatUser} from './services/chatServerService';
+import {addNewUserToDB} from './services/firestoreService';
 import {WModal, WToast} from 'react-native-smart-tip';
 import {Avatar} from 'react-native-elements';
 
 export default class SignUp extends React.Component {
-    state = { name: '', email: '', password: '', confirmPassword: '', pin: '', errorMessage: null }
+    state = {name: '', email: '', password: '', confirmPassword: '', pin: '', errorMessage: null};
     // server location for generating cute lil avatars
     avatar_url = 'http://localhost:5200/myAvatars/100/';
 
@@ -16,37 +16,38 @@ export default class SignUp extends React.Component {
         textColor: '#fff',
         backgroundColor: '#444444',
         position: WModal.position.CENTER,
-        icon: <ActivityIndicator color='#fff' size={'large'}/>
-    }
+        icon: <ActivityIndicator color='#fff' size={'large'}/>,
+    };
 
     /**
      * Attempts to sign the user up, will present loading notifcation while it does so
      * and present toasts for error messages
      */
     handleSignUp = () => {
-        WModal.show(this.modalOpts)
+        WModal.show(this.modalOpts);
         firebase
             .auth()
             .createUserWithEmailAndPassword(this.state.email, this.state.password)
             .then(() => {
                 let user = {
                     email: this.state.email.toLowerCase(),
-                    name: this.state.name.toLowerCase()
-                }
+                    name: this.state.name.toLowerCase(),
+                };
                 // calls chatkit service agents to create new user
-                createNewChatUser(user)
+                createNewChatUser(user);
                 // calls firestore service to add user data to db
-                addNewUserToDB(this.state)
-                this.toastSuccessMessage('Account Created! Welcome ' + user.name)
-                this.props.navigation.navigate('Main', {currentUserEmail: user.email})
+                addNewUserToDB(this.state);
+                this.toastSuccessMessage('Account Created! Welcome ' + user.name);
+                this.props.navigation.navigate('Main', {currentUserEmail: user.email});
 
             })
             .catch(error => {
-                this.toastErrorMessage(error.message)
-                this.setState({ errorMessage: error.message })
-            })
+                WModal.hide();
+                this.toastErrorMessage(error.message);
+                this.setState({errorMessage: error.message});
+            });
 
-    }
+    };
 
     /**
      * Creates a toast notification for error messages
@@ -58,8 +59,8 @@ export default class SignUp extends React.Component {
             backgroundColor: '#bd3926',
             duration: WToast.duration.SHORT,
             position: WToast.position.TOP,
-        })
-    }
+        });
+    };
 
     /**
      * Creates a toast notification for success messages
@@ -71,8 +72,8 @@ export default class SignUp extends React.Component {
             backgroundColor: '#2a7fbd',
             duration: WToast.duration.SHORT,
             position: WToast.position.TOP,
-        })
-    }
+        });
+    };
 
     render() {
         return (
@@ -89,14 +90,14 @@ export default class SignUp extends React.Component {
                     placeholder="Name"
                     autoCapitalize="none"
                     style={styles.textInput}
-                    onChangeText={name => this.setState({ name })}
+                    onChangeText={name => this.setState({name})}
                     value={this.state.name}
                 />
                 <TextInput
                     placeholder="Email"
                     autoCapitalize="none"
                     style={styles.textInput}
-                    onChangeText={email => this.setState({ email })}
+                    onChangeText={email => this.setState({email})}
                     value={this.state.email}
                 />
                 <TextInput
@@ -104,7 +105,7 @@ export default class SignUp extends React.Component {
                     placeholder="Password"
                     autoCapitalize="none"
                     style={styles.textInput}
-                    onChangeText={password => this.setState({ password })}
+                    onChangeText={password => this.setState({password})}
                     value={this.state.password}
                 />
                 <TextInput
@@ -112,7 +113,7 @@ export default class SignUp extends React.Component {
                     placeholder="Confirm Password"
                     autoCapitalize="none"
                     style={styles.textInput}
-                    onChangeText={confirmPassword => this.setState({ confirmPassword })}
+                    onChangeText={confirmPassword => this.setState({confirmPassword})}
                     value={this.state.confirmPassword}
                 />
                 <TextInput
@@ -120,16 +121,18 @@ export default class SignUp extends React.Component {
                     placeholder="Create Your Pin"
                     autoCapitalize="none"
                     style={styles.textInput}
-                    onChangeText={pin => this.setState({ pin })}
+                    onChangeText={pin => this.setState({pin})}
                     value={this.state.pin}
                 />
-                <Button title="Sign Up" onPress={this.handleSignUp} />
+
+                <Button title="Sign Up" onPress={this.handleSignUp}/>
+
                 <Button
                     title="Already have an account? Login"
                     onPress={() => this.props.navigation.navigate('Login')}
                 />
             </View>
-        )
+        );
     }
 }
 
@@ -137,17 +140,17 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     textInput: {
         height: 40,
         width: '90%',
         borderColor: 'gray',
         borderWidth: 1,
-        marginTop: 8
+        marginTop: 8,
     },
     headerStyle: {
         fontSize: 24,
-        paddingTop: 20
+        paddingTop: 20,
     }
-})
+});
