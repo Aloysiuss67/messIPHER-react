@@ -102,7 +102,7 @@ export default class Main extends React.Component {
         // called every time this pages takes focus, need to reset friends list
         this.props.navigation.addListener('didFocus', async () => {
             let userEmail = this.props.navigation.getParam('currentUserEmail');
-            console.log(this.props.navigation.getParam('chat'))
+
             if (this.props.navigation.getParam('chat') != null){
                 // new chatkit is potentiall created in find friends, need to update
                 if (this.isMount) {

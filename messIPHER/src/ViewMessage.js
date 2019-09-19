@@ -9,11 +9,14 @@ import {
     TouchableOpacity,
     KeyboardAvoidingView,
     RefreshControl,
+    Button,
+    Alert
 } from 'react-native';
 
 import {HeaderBackButton} from 'react-navigation-stack';
 import DialogInput from 'react-native-dialog-input';
 import {getPin} from './services/firestoreService';
+import {Icon} from 'react-native-elements';
 
 
 export default class ViewMessage extends React.Component {
@@ -132,13 +135,14 @@ export default class ViewMessage extends React.Component {
 
                     <View style={styles.message_box}>
                         <View style={styles.button_container}>
-                            {
-                                <TouchableOpacity onPress={() => this.showDialog()}>
-                                    <View style={styles.send_button}>
-                                        <Text style={styles.send_button_text}>Unlock</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            }
+                            <Icon
+                                reverse
+                                name='ios-glasses'
+                                type='ionicon'
+                                color='#517aa4'
+                                size={17}
+                                onPress={() => this.showDialog()}
+                            />
                         </View>
                         <TextInput
                             style={styles.text_field}
@@ -149,20 +153,24 @@ export default class ViewMessage extends React.Component {
                         />
 
                         <View style={styles.button_container}>
-                            {
-                                <TouchableOpacity onPress={() => this.sendMessage()}>
-                                    <View style={styles.send_button}>
-                                        <Text style={styles.send_button_text}>Send</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            }
-                            {
-                                <TouchableOpacity onPress={() => this.sendLockedMessage()}>
-                                    <View style={styles.send_button}>
-                                        <Text style={styles.send_button_text}>Lock</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            }
+                            <Icon
+                                reverse
+                                name='ios-lock'
+                                type='ionicon'
+                                color='#517aa4'
+                                size={17}
+                                onPress={() =>  this.sendLockedMessage()}
+                              />
+                        </View>
+                        <View style={styles.button_container}>
+                            <Icon
+                                reverse
+                                name='ios-send'
+                                type='ionicon'
+                                color='#517aa4'
+                                size={17}
+                                onPress={() => this.sendMessage()}
+                            />
                         </View>
                     </View>
                 </View>
