@@ -84,7 +84,6 @@ export class chatClientService {
                         message: message.parts[0].payload.content,
                         userID: message.senderId,
                     });
-                    //this.messagesSubject.next(this.inbox);
                 },
             },
         });
