@@ -1,11 +1,11 @@
 import React from 'react';
-import {StyleSheet, Platform, Image, Text, View, Button} from 'react-native';
+import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import {SearchBar, ListItem} from 'react-native-elements';
 import firebase from 'react-native-firebase';
 import {searchForNewFriends} from './services/firestoreService';
 import {makeNewRoom, addUsersToRoom} from './services/chatServerService';
 import {chatClientService} from './services/chatClientService';
-import {WToast} from 'react-native-smart-tip';
+import {WModal, WToast} from 'react-native-smart-tip';
 
 export default class FindFriends extends React.Component {
     state = {currentUser: null, search: '', list: [], chat: null, roomId: '', onFriendsList: false};
@@ -15,13 +15,21 @@ export default class FindFriends extends React.Component {
     // server location for generating cute lil avatars
     avatar_url = 'http://localhost:5200/myAvatars/45/';
 
+    // the loading notifcation for fetching from apis
+    modalOpts = {
+        data: 'Find you two a room...',
+        textColor: '#fff',
+        backgroundColor: '#444444',
+        position: WModal.position.CENTER,
+        icon: <ActivityIndicator color='#fff' size={'large'}/>
+    }
+
 
     /**
      * Adds listeners for screen focus and auth change. On screen focus we update the current users
      * on auth change we reset all private fields.
      */
     componentDidMount() {
-        //this.chatkit = new chatClientService()
         // switch mount to true, to protect leaks on setState
         this.isMount = true;
         // methods to call when page gets focus
@@ -39,7 +47,6 @@ export default class FindFriends extends React.Component {
                 this.chatkit = this.props.navigation.getParam('func')();
                 let userEmail = this.props.navigation.getParam('currentUserEmail');
 
-                // this.chatkit.connectToChat(userEmail)
                 // set state to contain reference to this chatkit
                 if (this.isMount) {
                     this.setState({chat: this.chatkit});
@@ -92,16 +99,18 @@ export default class FindFriends extends React.Component {
         const check = await this.checkIfFriends(friend);
         // do we need to add them as a friend
         if (!this.state.onFriendsList) {
+            WModal.show(this.modalOpts)
             await this.addNewFriend(friend);
             this.toastSuccessMessage('New Friend Added!');
         }
         console.log(this.state.roomId);
+        WModal.hide()
         // move to message page
         this.props.navigation.navigate('ViewMessage', {
             id: this.state.roomId,
             name: friend.username,
             currentUserEmail: this.props.navigation.getParam('currentUserEmail'),
-            chat: this.state.chat,
+            chat: this.props.navigation.getParam('func')(),
         });
     }
 
@@ -146,14 +155,15 @@ export default class FindFriends extends React.Component {
 
         // data stored on firestore
         // user is automatically added to rooms they create
-        this.roomId = await makeNewRoom(userEmail, userEmail + friend.email);
+        let roomId = await makeNewRoom(userEmail, userEmail + friend.email);
+        this.setState({roomId: roomId})
 
         let friendData = {
-            chatToken: this.roomId,
+            chatToken: roomId,
             username: friend.username,
         };
         let userData = {
-            chatToken: this.roomId,
+            chatToken: roomId,
             username: username,
         };
 
@@ -162,7 +172,6 @@ export default class FindFriends extends React.Component {
             .set(friendData)
             .then(res => {
                 console.log('new friend added');
-                // this.presentToast('New Friend added');
             })
             .catch((err) => {
                 console.log(err);
@@ -176,9 +185,10 @@ export default class FindFriends extends React.Component {
                 console.log(err);
             });
         // adds friend to that room as well
-        addUsersToRoom(this.roomId, friend.email);
+        addUsersToRoom(roomId, friend.email);
         // subscribes user to this new room, which should hook new messages
-        this.state.chat.connectToChat(userEmail);
+        await this.props.navigation.getParam('func')().subscribeUserToRoom(roomId)
+        // this.state.chat.connectToChat(userEmail);
     }
 
 // ------------------------- METHODS FOR RENDER AND STYLES BELOW
